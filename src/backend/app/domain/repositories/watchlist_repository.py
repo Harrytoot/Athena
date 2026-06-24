@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from app.application.dtos.watchlist_dtos import Watchlist
+from app.domain.entities.watchlist import Watchlist
 
 
 class WatchlistRepository(ABC):

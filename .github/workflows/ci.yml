@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: athena
+          POSTGRES_PASSWORD: athena
+          POSTGRES_DB: athena
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -r src/backend/requirements.txt
+      - name: Lint (Ruff)
+        run: pip install ruff && ruff check src/backend/
+      - name: Type Check
+        run: echo "Type check placeholder"
+      - name: Test
+        run: echo "Tests placeholder"
+        env:
+          DATABASE_URL: postgresql+asyncpg://athena:athena@localhost:5432/athena
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install
+        run: cd src/frontend && npm ci
+      - name: Lint
+        run: cd src/frontend && npx tsc --noEmit
+      - name: Build
+        run: cd src/frontend && npm run build
