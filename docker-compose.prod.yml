@@ -4,6 +4,7 @@ services:
       context: ./src/frontend
       dockerfile: Dockerfile
     restart: unless-stopped
+    env_file: .env.production
     environment:
       NEXT_PUBLIC_API_URL: /athena/api/v1
     networks:
@@ -14,6 +15,7 @@ services:
       context: ./src/backend
       dockerfile: Dockerfile
     restart: unless-stopped
+    env_file: .env.production
     environment:
       APP_NAME: Athena
       APP_VERSION: 0.1.0
@@ -35,6 +37,7 @@ services:
   postgres:
     image: postgres:16-alpine
     restart: unless-stopped
+    env_file: .env.production
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -67,6 +70,7 @@ services:
     image: minio/minio:latest
     restart: unless-stopped
     command: server /data --console-address ":9001"
+    env_file: .env.production
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}

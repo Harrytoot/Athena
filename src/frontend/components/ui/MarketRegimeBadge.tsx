@@ -9,8 +9,8 @@ const regimeConfig: Record<MarketRegime, { label: string; color: string; bg: str
   Volatile: { label: "高波动", color: "text-purple-600", bg: "bg-purple-50 border-purple-200" },
 };
 
-export function MarketRegimeBadge({ regime }: { regime: MarketRegime }) {
-  const config = regimeConfig[regime] ?? regimeConfig.Range;
+export function MarketRegimeBadge({ regime }: { regime: MarketRegime | string }) {
+  const config = regimeConfig[regime as MarketRegime] ?? regimeConfig.Range;
   return (
     <span className={cn("inline-flex items-center rounded-md border px-2.5 py-0.5 text-sm font-semibold", config.bg, config.color)}>
       {config.label}
