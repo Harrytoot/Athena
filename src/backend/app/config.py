@@ -1,0 +1,22 @@
+from pydantic_settings import BaseSettings
+
+
+class Settings(BaseSettings):
+    APP_NAME: str = "Athena"
+    APP_VERSION: str = "0.1.0"
+    ENV: str = "development"
+
+    DATABASE_URL: str = "postgresql+asyncpg://athena:athena@localhost:5432/athena"
+    REDIS_URL: str = "redis://localhost:6379/0"
+    MINIO_ENDPOINT: str = "localhost:9000"
+    MINIO_ACCESS_KEY: str = "athena"
+    MINIO_SECRET_KEY: str = "athena_secret"
+    MINIO_BUCKET: str = "athena"
+
+    LITELLM_API_KEY: str = ""
+    LITELLM_BASE_URL: str = "http://localhost:4000"
+
+    model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
+
+
+settings = Settings()
