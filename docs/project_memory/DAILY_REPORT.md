@@ -4,21 +4,22 @@
 
 ### Today
 - Sprint 1 架构初始化 (773efd9)
-- ADR-001 + ADR-002
-- RFC-001 批准 + 开发顺序调整
-- **Epic-002 Market Center** (66ef627) — MarketProvider + Dashboard/Market 页面
-- **Epic-003 Watchlist** (3fe1e30) — CRUD + 搜索 + 5 默认分组
-- **Epic-004 Stock Detail** — 完成
-  - StockDetailProvider + MockStockDetailProvider (K线/技术指标/基本面/资金面/AI分析)
-  - StockService + GET /api/v1/stocks/{symbol}
-  - Frontend: StockDetail 页面 + TechnicalCard / MoneyFlowCard / AiSummaryCard
-  - K线图占位（预留 TradingView/ECharts 接入）
-  - Watchlist 股票行可点击跳转详情页
+- ADR-001 (技术栈) + ADR-002 (开发原则) + ADR-003 (10条核心原则)
+- AES-001 (四层架构蓝图: 五大中心 + 三层智能 + Knowledge Graph)
+- RFC-001 (Sprint 1 计划) + RFC-002 (三仓库拆分)
+- **Epic-002 Market Center** (66ef627)
+- **Epic-003 Watchlist** (3fe1e30)
+- **Epic-004 Stock Detail** (290c0e0)
 
 ### Changed
-- Backend: +4 文件 (providers/stock/detail_*, stock_service, stock API)
-- Frontend: +5 文件 (StockDetail page, TechnicalCard, MoneyFlowCard, AiSummaryCard, types)
-- Watchlist 页面: 股票代码/名称增加跳转链接
+- 文档资产: 3 ADR + 1 AES + 2 RFC + 1 DB + 1 API + 3 PRD/TASK + SPRINT_STATUS
+- 代码资产: 3/6 Epic 完成
+  - Backend: providers/market, providers/stock, DDD repositories, 10 API endpoints
+  - Frontend: Dashboard, Market, Watchlist, StockDetail pages, 15+ components
+  - Infra: Docker Compose (PostgreSQL, Redis, MinIO, Nginx), auto-migration
+- 架构原则: 10 principles approved (Documentation First, Event Bus, Explainable AI, etc.)
+- 目标升级: Investor Operating System (非 Quant System)
+- 成功指标: 决策质量 > 收益率
 
 ### Risk
 - 无
