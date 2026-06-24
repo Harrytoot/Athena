@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from app.api import deps
-from app.api.v1 import dashboard, market, watchlist
+from app.api.v1 import dashboard, market, stock, watchlist
 from app.config import settings
 from app.infrastructure.persistence.base import Base
 from app.infrastructure.persistence.models.user import UserModel  # noqa: F401
@@ -19,6 +19,7 @@ app = FastAPI(
 app.include_router(market.router, prefix="/api/v1")
 app.include_router(dashboard.router, prefix="/api/v1")
 app.include_router(watchlist.router, prefix="/api/v1")
+app.include_router(stock.router, prefix="/api/v1")
 
 
 @app.get("/health")

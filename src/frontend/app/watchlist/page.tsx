@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import type { StockSearchResult, Watchlist } from "@/types/watchlist";
 import {
@@ -122,10 +123,12 @@ export default function WatchlistPage() {
                   ) : (
                     selectedGroup.items.map((item) => (
                       <tr key={item.id} className="border-b text-sm hover:bg-gray-50">
-                        <td className="px-4 py-3 font-mono font-medium text-gray-900">
-                          {item.symbol}
+                        <td className="px-4 py-3 font-mono font-medium text-blue-600 hover:text-blue-800">
+                          <Link href={`/stocks/${item.symbol}`}>{item.symbol}</Link>
                         </td>
-                        <td className="px-4 py-3 font-medium text-gray-700">{item.name}</td>
+                        <td className="px-4 py-3 font-medium text-blue-600 hover:text-blue-800">
+                          <Link href={`/stocks/${item.symbol}`}>{item.name}</Link>
+                        </td>
                         <td className="px-4 py-3 text-right tabular-nums text-gray-900">
                           {item.currentPrice?.toFixed(2) ?? "--"}
                         </td>

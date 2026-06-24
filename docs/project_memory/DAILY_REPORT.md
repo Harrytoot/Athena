@@ -4,28 +4,24 @@
 
 ### Today
 - Sprint 1 架构初始化 (773efd9)
-- ADR-001 (技术栈) + ADR-002 (开发原则)
-- RFC-001 批准 + 开发顺序调整 (CTO)
-- **Epic-002 Market Center** — 完成 (66ef627)
-  - MarketProvider + MockMarketProvider
-  - Dashboard + Market 页面
-- **Epic-003 Watchlist** — 完成
-  - StockSearchProvider + MockStockSearchProvider
-  - WatchlistRepository (DDD) + SQLAlchemy 模型
-  - WatchlistService + 7 API 端点
-  - Frontend: 分组侧栏 + 股票搜索 + 表格展示
-  - 默认 5 个分组种子数据
-  - 数据库自动建表 + 默认用户
+- ADR-001 + ADR-002
+- RFC-001 批准 + 开发顺序调整
+- **Epic-002 Market Center** (66ef627) — MarketProvider + Dashboard/Market 页面
+- **Epic-003 Watchlist** (3fe1e30) — CRUD + 搜索 + 5 默认分组
+- **Epic-004 Stock Detail** — 完成
+  - StockDetailProvider + MockStockDetailProvider (K线/技术指标/基本面/资金面/AI分析)
+  - StockService + GET /api/v1/stocks/{symbol}
+  - Frontend: StockDetail 页面 + TechnicalCard / MoneyFlowCard / AiSummaryCard
+  - K线图占位（预留 TradingView/ECharts 接入）
+  - Watchlist 股票行可点击跳转详情页
 
 ### Changed
-- Backend: +11 后端文件 (providers, domain, infrastructure, application, API)
-- Frontend: +5 前端文件 (watchlist page, sidebar, search, types, api client)
-- Dependencies: 0 新增
-- 所有代码符合 DDD + Provider Pattern
+- Backend: +4 文件 (providers/stock/detail_*, stock_service, stock API)
+- Frontend: +5 文件 (StockDetail page, TechnicalCard, MoneyFlowCard, AiSummaryCard, types)
+- Watchlist 页面: 股票代码/名称增加跳转链接
 
 ### Risk
 - 无
 
 ### Tomorrow Plan
-- Epic-004 Stock Detail (待确认)
-- 单元测试补充
+- Epic-005 Portfolio (待确认)
