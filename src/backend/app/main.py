@@ -1,7 +1,12 @@
 from fastapi import FastAPI
 
-from app.api.v1 import dashboard, market
+from app.api import deps
+from app.api.v1 import dashboard, market, watchlist
 from app.config import settings
+from app.infrastructure.persistence.base import Base
+from app.infrastructure.persistence.models.user import UserModel  # noqa: F401
+from app.infrastructure.persistence.models.watchlist import WatchlistModel, WatchlistItemModel  # noqa: F401
+from app.infrastructure.persistence.session import engine
 from app.plugins import PluginRegistry
 
 app = FastAPI(
@@ -13,6 +18,7 @@ app = FastAPI(
 
 app.include_router(market.router, prefix="/api/v1")
 app.include_router(dashboard.router, prefix="/api/v1")
+app.include_router(watchlist.router, prefix="/api/v1")
 
 
 @app.get("/health")
@@ -25,6 +31,9 @@ plugin_registry = PluginRegistry()
 
 @app.on_event("startup")
 async def startup():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    await deps.ensure_default_user()
     await plugin_registry.discover_and_load()
 
 

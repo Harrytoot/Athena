@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: "📊" },
   { href: "/market", label: "Market", icon: "📈" },
-  { href: "#", label: "Watchlist", icon: "⭐", disabled: true },
+  { href: "/watchlist", label: "Watchlist", icon: "⭐" },
   { href: "#", label: "Portfolio", icon: "💼", disabled: true },
   { href: "#", label: "Research", icon: "🔬", disabled: true },
   { href: "#", label: "Strategy", icon: "⚙️", disabled: true },
