@@ -1,5 +1,7 @@
 # Athena
 
+> Athena 的目标不是预测市场，而是持续提升决策质量。
+
 AI-powered investment operating system — Sprint 1 (Foundation)
 
 ## Tech Stack
