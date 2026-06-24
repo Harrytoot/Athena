@@ -1,0 +1,63 @@
+import { getMarketOverview } from "@/lib/api";
+import { AiMarketSummaryCard } from "@/components/ui/AiMarketSummaryCard";
+import { HotSectorList } from "@/components/ui/HotSectorList";
+import { IndexCard } from "@/components/ui/IndexCard";
+import { MarketRegimeBadge } from "@/components/ui/MarketRegimeBadge";
+import { MarketStatsRow } from "@/components/ui/MarketStatsRow";
+import { MarketTemperatureGauge } from "@/components/ui/MarketTemperatureGauge";
+import { UpdateTimeLabel } from "@/components/ui/UpdateTimeLabel";
+
+export default async function DashboardPage() {
+  let data;
+  try {
+    data = await getMarketOverview();
+  } catch {
+    return <ErrorState />;
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="mx-auto max-w-7xl space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-gray-900">市场概览</h1>
+            <MarketRegimeBadge regime={data.marketRegime} />
+          </div>
+          <UpdateTimeLabel time={data.updatedAt} />
+        </div>
+
+        <div className="grid grid-cols-4 gap-4">
+          <MarketTemperatureGauge temperature={data.temperature} />
+          <IndexCard index={data.indices.shanghai} label="上证指数" />
+          <IndexCard index={data.indices.shenzhen} label="深证成指" />
+          <IndexCard index={data.indices.chi_next} label="创业板指" />
+        </div>
+
+        <MarketStatsRow
+          turnover={data.turnover}
+          upCount={data.upCount}
+          downCount={data.downCount}
+          northbound={data.northbound}
+        />
+
+        <div className="grid grid-cols-2 gap-4">
+          <HotSectorList title="热点行业 Top10" items={data.hotIndustries} />
+          <HotSectorList title="热点概念 Top10" items={data.hotConcepts} />
+        </div>
+
+        <AiMarketSummaryCard summary={data.summary} />
+      </div>
+    </div>
+  );
+}
+
+function ErrorState() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="text-center">
+        <div className="text-lg font-medium text-gray-700">无法连接到后端服务</div>
+        <div className="mt-2 text-sm text-gray-500">请确保 docker-compose up 已启动</div>
+      </div>
+    </div>
+  );
+}
