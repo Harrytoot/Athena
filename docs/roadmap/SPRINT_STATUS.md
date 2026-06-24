@@ -8,7 +8,7 @@ Start: 2026-06-24 | Target: TBD
 
 | Priority | Epic | Status |
 |----------|------|--------|
-| P0 | Epic-002 Market Center | 🔵 In Progress |
+| P0 | Epic-002 Market Center | 🟢 Completed |
 | P0 | Epic-003 Watchlist | ⚪ Pending |
 | P0 | Epic-004 Stock Detail | ⚪ Pending |
 | P0 | Epic-005 Portfolio | ⚪ Pending |
@@ -17,7 +17,9 @@ Start: 2026-06-24 | Target: TBD
 
 ### Current Epic
 
-**Epic-002 Market Center** — 建立第一个用户价值闭环。
+**Epic-002 Market Center ✅** — 第一个用户价值闭环已完成。
+
+Next: Epic-003 Watchlist (待确认)
 
 ### Development Principles
 
