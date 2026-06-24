@@ -6,10 +6,12 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.services.market_service import MarketService
+from app.application.services.portfolio_service import PortfolioService
 from app.application.services.stock_service import StockService
 from app.application.services.watchlist_service import WatchlistService
 from app.infrastructure.persistence.models.user import UserModel
 from app.infrastructure.persistence.models.watchlist import WatchlistModel
+from app.infrastructure.persistence.repositories.portfolio_repository import PortfolioRepositoryImpl
 from app.infrastructure.persistence.repositories.watchlist_repository import WatchlistRepositoryImpl
 from app.infrastructure.persistence.session import async_session_factory
 from app.providers.market.mock_provider import MockMarketProvider
@@ -40,6 +42,11 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
         except Exception:
             await session.rollback()
             raise
+
+
+async def get_portfolio_service(session: AsyncSession = Depends(get_db)) -> PortfolioService:
+    repo = PortfolioRepositoryImpl(session)
+    return PortfolioService(repo)
 
 
 async def get_watchlist_service(

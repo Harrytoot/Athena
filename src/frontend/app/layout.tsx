@@ -11,7 +11,7 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: "📊" },
   { href: "/market", label: "Market", icon: "📈" },
   { href: "/watchlist", label: "Watchlist", icon: "⭐" },
-  { href: "#", label: "Portfolio", icon: "💼", disabled: true },
+  { href: "/portfolio", label: "Portfolio", icon: "💼" },
   { href: "#", label: "Research", icon: "🔬", disabled: true },
   { href: "#", label: "Strategy", icon: "⚙️", disabled: true },
   { href: "#", label: "Backtest", icon: "⏪", disabled: true },

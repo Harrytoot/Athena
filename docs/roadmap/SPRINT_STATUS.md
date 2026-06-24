@@ -11,7 +11,7 @@ Start: 2026-06-24 | Target: TBD
 | P0 | Epic-002 Market Center | 🟡 Review |
 | P0 | Epic-003 Watchlist | 🟡 Review |
 | P0 | Epic-004 Stock Detail | 🟡 Review |
-| P0 | Epic-005 Portfolio | ⚪ Pending |
+| P0 | Epic-005 Portfolio | 🟡 Review |
 | P1 | Epic-006 Recommendation | ⚪ Pending |
 | P1 | Epic-001 Authentication | ⚪ Pending |
 
