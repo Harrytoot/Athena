@@ -12,6 +12,7 @@ const navItems = [
   { href: "/market", label: "Market", icon: "📈" },
   { href: "/watchlist", label: "Watchlist", icon: "⭐" },
   { href: "/portfolio", label: "Portfolio", icon: "💼" },
+  { href: "/recommendation", label: "Recommend", icon: "💡" },
   { href: "#", label: "Research", icon: "🔬", disabled: true },
   { href: "#", label: "Strategy", icon: "⚙️", disabled: true },
   { href: "#", label: "Backtest", icon: "⏪", disabled: true },

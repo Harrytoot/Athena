@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.services.market_service import MarketService
 from app.application.services.portfolio_service import PortfolioService
+from app.application.services.recommendation_service import RecommendationService
 from app.application.services.stock_service import StockService
 from app.application.services.watchlist_service import WatchlistService
 from app.infrastructure.persistence.models.user import UserModel
@@ -47,6 +48,16 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 async def get_portfolio_service(session: AsyncSession = Depends(get_db)) -> PortfolioService:
     repo = PortfolioRepositoryImpl(session)
     return PortfolioService(repo)
+
+
+async def get_recommendation_service(
+    session: AsyncSession = Depends(get_db),
+) -> RecommendationService:
+    return RecommendationService(
+        market_service=_market_service,
+        portfolio_service=PortfolioService(PortfolioRepositoryImpl(session)),
+        watchlist_service=WatchlistService(WatchlistRepositoryImpl(session), _stock_search_provider),
+    )
 
 
 async def get_watchlist_service(

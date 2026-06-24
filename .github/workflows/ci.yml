@@ -36,7 +36,7 @@ jobs:
       - name: Type Check
         run: echo "Type check placeholder"
       - name: Test
-        run: echo "Tests placeholder"
+        run: cd src/backend && pip install pytest pytest-asyncio httpx && python -m pytest tests/ -v
         env:
           DATABASE_URL: postgresql+asyncpg://athena:athena@localhost:5432/athena
 
