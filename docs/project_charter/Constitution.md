@@ -57,6 +57,19 @@ Athena 追求"最可信"，而非"最聪明"。
 1. 核心 KPI：决策质量，不是收益率
 2. 包含：决策命中率、风险控制、回撤控制、一致性、稳定性、学习效率
 3. 不以"完成多少代码"衡量进度，以"完成多少用户价值闭环"衡量
+4. **Measure Everything**: Agent / Strategy / Factor / Model / Prompt 全部量化
+
+系统不仅分析市场，还分析自己。
+
+| 对象 | 指标示例 |
+|------|---------|
+| Agent | 决策次数、被采纳率、平均贡献收益、最大错误、校准误差 |
+| Strategy | 年化收益、夏普、最大回撤、胜率、盈亏比、换手率 |
+| Factor | IC、Rank IC、因子衰减、有效周期 |
+| Model | AUC、Precision、Recall、Drift |
+| Prompt | Token 成本、响应时间、正确率 |
+
+如果不能测量，就不能持续优化。
 
 ---
 
@@ -89,5 +102,5 @@ Athena 追求"最可信"，而非"最聪明"。
 
 ---
 
-Version: 1.0.0
+Version: 1.1.0
 Ratified: 2026-06-24
