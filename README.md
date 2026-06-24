@@ -107,10 +107,23 @@ location /athena/ {
 
 See [RFC-003 Deployment Architecture](docs/rfc/RFC-003-deployment-architecture.md) for full details.
 
+## Architecture
+
+Athena 采用三层知识架构：
+
+| 层级 | 说明 |
+|------|------|
+| **Athena Brain** | 长期知识操作系统，AI 与人类的共同上下文 |
+| **Engineering** | 代码、架构、基础设施 |
+| **Documentation** | 设计文档、规范、决策记录 |
+
+详见 [ADR-010 Athena Brain Introduction](docs/adr/ADR-010-athena-brain-introduction.md)。
+
 ## Docs Index
 
 | 目录 | 说明 |
 |------|------|
+| [Brain](docs/brain/) | **Athena Brain — 知识操作系统** |
 | [AMS](docs/ams/) | Master Specification |
 | [ADR](docs/adr/) | Architecture Decision Records |
 | [RFC](docs/rfc/) | Request for Comments |

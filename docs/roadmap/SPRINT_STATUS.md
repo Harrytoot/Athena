@@ -29,6 +29,13 @@ Next: Epic-003 Watchlist Review → Epic-004 Review → Epic-005 Portfolio
 - Human First — 先辅助决策，后自动交易
 - Review Gate — 每个 Epic 必须通过 Code/Architecture/Product Review
 
+## Architecture Milestones
+
+| Milestone | Status | Date |
+|-----------|--------|------|
+| Engineering Baseline | 🟢 Completed | 2026-06-24 |
+| Athena Brain Foundation | 🟢 Completed | 2026-06-24 |
+
 ### Legend
 
 | Symbol | Meaning |
