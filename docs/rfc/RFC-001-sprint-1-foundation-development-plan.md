@@ -58,6 +58,21 @@ Login → Dashboard → Market → Watchlist → Portfolio → Recommendation
 
 ---
 
+# Development Order (CTO Mandate)
+
+见 [ADR-002 Development Principles](../adr/ADR-002-development-principles.md)。
+
+| Priority | Epic | Rationale |
+|----------|------|-----------|
+| P0 | Epic-002 Market Center | 市场分析是核心用户价值 |
+| P0 | Epic-003 Watchlist | 自选股是个人投资入口 |
+| P0 | Epic-004 Stock Detail | 个股是决策基本单元 |
+| P0 | Epic-005 Portfolio | 持仓是资产管理的核心 |
+| P1 | Epic-006 Recommendation | 基于持仓和市场的规则引擎 |
+| P1 | Epic-001 Authentication | 单用户 Alpha，登录非当前价值 |
+
+---
+
 # Sprint Scope
 
 本阶段包含六个 Epic。
