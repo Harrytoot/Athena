@@ -55,6 +55,58 @@ npm run dev
 
 Copy `.env.example` to `.env` and adjust as needed.
 
+## Production Deployment
+
+### Prerequisites
+
+- Linux server with Docker & Docker Compose
+- Existing Nginx reverse proxy
+- Git
+
+### Setup
+
+```bash
+git clone <repo-url> /opt/athena
+cd /opt/athena
+
+# Configure environment
+cp .env.example .env.production
+# Edit .env.production with secure passwords
+
+# Deploy
+./infra/scripts/deploy.sh
+```
+
+### Nginx Integration
+
+Add to your existing Nginx config:
+
+```nginx
+location /athena/ {
+    include /opt/athena/infra/nginx/athena.conf;
+}
+```
+
+### Backup
+
+```bash
+./infra/scripts/backup.sh  # Daily cron
+```
+
+### Rollback
+
+```bash
+./infra/scripts/rollback.sh <commit-hash>
+```
+
+### Health Check
+
+```bash
+./infra/scripts/healthcheck.sh
+```
+
+See [RFC-003 Deployment Architecture](docs/rfc/RFC-003-deployment-architecture.md) for full details.
+
 ## Docs Index
 
 | 目录 | 说明 |

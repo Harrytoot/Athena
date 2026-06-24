@@ -31,10 +31,16 @@ docker-data/
 .env
 .env.local
 .env.*.local
+!.env.example
+!.env.production
+!.env.staging
 
 # Logs
 *.log
 logs/
+
+# Backups
+backups/
 
 # Uploads
 uploads/
