@@ -13,13 +13,13 @@ Start: 2026-06-24 | Target: TBD
 | P0 | Epic-004 Stock Detail | 🟡 Review |
 | P0 | Epic-005 Portfolio | 🟡 Review |
 | P0 | Epic-006 Recommendation | 🟡 Review |
-| P1 | Epic-001 Authentication | ⚪ Pending |
+| P1 | Epic-001 Authentication | 🟡 Review |
 
 ### Current Epic
 
-**Awaiting Review: Epic-002 Market Center**
+**All Epics implemented. Sprint 1 Review in progress.**
 
-Next: Epic-003 Watchlist Review → Epic-004 Review → Epic-005 Portfolio
+Next: Wire real providers (AKShare), Alembic migrations, infrastructure layer
 
 ### Development Principles
 

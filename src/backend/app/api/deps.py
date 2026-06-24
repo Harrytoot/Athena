@@ -1,10 +1,12 @@
 import uuid
 from typing import AsyncGenerator
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.application.services.auth_service import AuthService
 from app.application.services.market_service import MarketService
 from app.application.services.portfolio_service import PortfolioService
 from app.application.services.recommendation_service import RecommendationService
@@ -97,12 +99,32 @@ async def ensure_default_user():
             )
             result = await session.execute(stmt)
             if result.scalars().first() is None:
-                session.add(
-                    WatchlistModel(
-                        user_id=uuid.UUID(DEFAULT_USER_ID),
-                        name=name,
-                        color=color,
-                        sort_order=sort_order,
+                    session.add(
+                        WatchlistModel(
+                            user_id=uuid.UUID(DEFAULT_USER_ID),
+                            name=name,
+                            color=color,
+                            sort_order=sort_order,
+                        )
                     )
-                )
         await session.commit()
+
+
+security_scheme = HTTPBearer(auto_error=False)
+
+
+async def get_auth_service(session: AsyncSession = Depends(get_db)) -> AuthService:
+    return AuthService(session)
+
+
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(security_scheme),
+    session: AsyncSession = Depends(get_db),
+):
+    if not credentials:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="请先登录")
+    service = AuthService(session)
+    user = await service.get_current_user(credentials.credentials)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token 无效或已过期")
+    return user

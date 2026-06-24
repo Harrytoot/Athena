@@ -16,6 +16,10 @@ class Settings(BaseSettings):
     LITELLM_API_KEY: str = ""
     LITELLM_BASE_URL: str = "http://localhost:4000"
 
+    JWT_SECRET_KEY: str = "athena-jwt-secret-key-change-in-production"
+    JWT_ALGORITHM: str = "HS256"
+    JWT_EXPIRE_MINUTES: int = 1440
+
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
 

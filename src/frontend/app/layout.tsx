@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import UserMenu from "@/components/UserMenu";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -52,6 +53,9 @@ export default function RootLayout({
               )
             )}
           </nav>
+          <div className="absolute bottom-4">
+            <UserMenu />
+          </div>
         </aside>
         <main className="flex-1">{children}</main>
       </body>
