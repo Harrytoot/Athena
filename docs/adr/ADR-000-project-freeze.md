@@ -138,6 +138,6 @@ Sprint 1 属于 **Phase A: Research OS** 的 Foundation 阶段。
 
 ## References
 
-- [Constitution](../project_charter/Constitution.md)
-- [Vision](../project_charter/Vision.md)
+- [Constitution](../project-charter/Constitution.md)
+- [Vision](../project-charter/Vision.md)
 - [AES-001](../aes/AES-001-four-layer-architecture.md)

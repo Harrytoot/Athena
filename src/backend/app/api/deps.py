@@ -17,16 +17,15 @@ from app.infrastructure.persistence.models.watchlist import WatchlistModel
 from app.infrastructure.persistence.repositories.portfolio_repository import PortfolioRepositoryImpl
 from app.infrastructure.persistence.repositories.watchlist_repository import WatchlistRepositoryImpl
 from app.infrastructure.persistence.session import async_session_factory
-from app.providers.market.mock_provider import MockMarketProvider
-from app.providers.stock.mock_detail_provider import MockStockDetailProvider
-from app.providers.stock.mock_provider import MockStockSearchProvider
+from app.providers.market.redis_provider import RedisMarketProvider
+from app.providers.stock.redis_provider import RedisStockDetailProvider, RedisStockSearchProvider
 
 DEFAULT_USER_ID = "00000000-0000-0000-0000-000000000001"
 DEFAULT_USER_EMAIL = "alpha@athena.local"
 
-_market_service = MarketService(provider=MockMarketProvider())
-_stock_search_provider = MockStockSearchProvider()
-_stock_service = StockService(provider=MockStockDetailProvider())
+_market_service = MarketService(provider=RedisMarketProvider())
+_stock_search_provider = RedisStockSearchProvider()
+_stock_service = StockService(provider=RedisStockDetailProvider())
 
 
 def get_market_service() -> MarketService:

@@ -69,6 +69,6 @@ Athena 必须具有"不知道"的能力：
 
 ## References
 
-- [Constitution v2.0.0](../project_charter/Constitution.md)
+- [Constitution v2.0.0](../project-charter/Constitution.md)
 - [ADR-000 Project Freeze](ADR-000-project-freeze.md)
 - [ADR-003 Core Principles](ADR-003-core-principles.md)

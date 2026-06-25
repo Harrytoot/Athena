@@ -275,7 +275,7 @@ AI 不是预测机器，而是推理机器。
 
 ## References
 
-- [Constitution v2.0.0](../project_charter/Constitution.md)
+- [Constitution v2.0.0](../project-charter/Constitution.md)
 - [ADR-000 Project Freeze](../adr/ADR-000-project-freeze.md)
 - [ADR-004 Evidence-Driven AI](../adr/ADR-004-evidence-driven-ai.md)
 - [AES-001 Four-Layer Architecture](../aes/AES-001-four-layer-architecture.md)

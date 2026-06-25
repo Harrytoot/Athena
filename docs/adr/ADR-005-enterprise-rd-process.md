@@ -113,4 +113,4 @@ BrokerProvider
 ## References
 
 - [AMS-001](../ams/AMS-001-master-specification.md)
-- [Constitution v2.0.0](../project_charter/Constitution.md)
+- [Constitution v2.0.0](../project-charter/Constitution.md)

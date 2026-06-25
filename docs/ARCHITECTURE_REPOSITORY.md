@@ -14,9 +14,9 @@ Ratified (2026-06-24)
 
 | 文档 | 路径 |
 |------|------|
-| Vision | [project_charter/Vision.md](project_charter/Vision.md) |
-| Mission | [project_charter/Mission.md](project_charter/Mission.md) |
-| Constitution v2.1.0 (14 Articles) | [project_charter/Constitution.md](project_charter/Constitution.md) |
+| Vision | [project-charter/Vision.md](project-charter/Vision.md) |
+| Mission | [project-charter/Mission.md](project-charter/Mission.md) |
+| Constitution v2.1.0 (14 Articles) | [project-charter/Constitution.md](project-charter/Constitution.md) |
 
 ---
 

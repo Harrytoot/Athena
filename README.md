@@ -121,22 +121,25 @@ Athena 采用三层知识架构：
 
 详见 [ADR-010 Athena Brain Introduction](docs/adr/ADR-010-athena-brain-introduction.md)。
 
-## Docs Index
+## Documentation
+
+> 完整文档导航请查看 [docs/README.md](docs/README.md)
 
 | 目录 | 说明 |
 |------|------|
-| [Brain](docs/brain/) | **Athena Brain — 知识操作系统** |
-| [AMS](docs/ams/) | Master Specification |
-| [ADR](docs/adr/) | Architecture Decision Records |
-| [RFC](docs/rfc/) | Request for Comments |
-| [AES](docs/aes/) | Architecture Evolution Strategy |
-| [PRD](docs/prd/) | Product Requirements |
-| [API](docs/api/) | API Specifications |
-| [Database](docs/database/) | Database Design |
-| [Glossary](docs/glossary/) | Domain Glossary |
-| [Engineering Standard](docs/engineering/) | Coding & Naming Standards |
-| [Architecture Repository](docs/ARCHITECTURE_REPOSITORY.md) | Master Index |
+| [project-charter](docs/project-charter/) | 项目章程：Vision, Mission, Constitution |
+| [adr](docs/adr/) | Architecture Decision Records (11) |
+| [rfc](docs/rfc/) | Request for Comments (3) |
+| [ams](docs/ams/) | Master Specification |
+| [aes](docs/aes/) | Architecture Evolution Strategy |
+| [api](docs/api/) | API Specifications |
+| [database](docs/database/) | Database Design |
+| [engineering](docs/engineering/) | Coding & Naming Standards |
+| [brain](docs/brain/) | Athena Brain — 知识操作系统 |
+| [glossary](docs/glossary/) | Domain Glossary |
+| [roadmap](docs/roadmap/) | Sprint 状态 + 能力路线图 |
+| [tasks](docs/tasks/) | Epic/Task 分解 |
 
 ## Sprint Status
 
-See [SPRINT_STATUS.md](docs/roadmap/SPRINT_STATUS.md)
+See [Sprint Status](docs/roadmap/SPRINT_STATUS.md)

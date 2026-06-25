@@ -184,5 +184,5 @@ Investment Decision（投资决策）
 ## References
 
 - [AMS-001 Athena Master Specification](../ams/AMS-001-master-specification.md)
-- [Constitution v2.0.0](../project_charter/Constitution.md)
+- [Constitution v2.0.0](../project-charter/Constitution.md)
 - [ADR-004 Evidence-Driven AI](../adr/ADR-004-evidence-driven-ai.md)

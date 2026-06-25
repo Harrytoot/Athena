@@ -262,6 +262,6 @@ Athena DSL → Compiler → Python + Capability Calls → Execution
 ## References
 
 - [AMS-001](../ams/AMS-001-master-specification.md)
-- [Constitution v2.0.0](../project_charter/Constitution.md)
+- [Constitution v2.0.0](../project-charter/Constitution.md)
 - [ADR-003 Core Principles](../adr/ADR-003-core-principles.md)
 - [ADR-005 Enterprise R&D Process](../adr/ADR-005-enterprise-rd-process.md)

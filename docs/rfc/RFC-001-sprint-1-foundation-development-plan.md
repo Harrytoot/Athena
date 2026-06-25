@@ -306,7 +306,7 @@ Plan
 
 保存：
 
-docs/project_memory/DAILY_REPORT.md
+docs/project-memory/DAILY_REPORT.md
 
 ---
 

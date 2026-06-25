@@ -23,7 +23,7 @@
 每次 Review 必须生成独立记录文件，永久保存，不得覆盖历史 Review。
 
 ```
-docs/project_memory/reviews/
+docs/project-memory/reviews/
 ├── EPIC-002-review-001.md
 ├── EPIC-002-review-002.md  (如有 Re-review)
 ├── EPIC-003-review-001.md
@@ -78,4 +78,4 @@ Pending → In Progress → Implemented → Review → Done
 ## References
 
 - [ADR-008 Sprint 1 Sequence Confirmation](../adr/ADR-008-sprint1-sequence.md)
-- [Constitution Article III — Documentation First](../project_charter/Constitution.md)
+- [Constitution Article III — Documentation First](../project-charter/Constitution.md)
