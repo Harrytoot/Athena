@@ -1,4 +1,3 @@
-from decimal import Decimal
 
 from app.application.dtos.portfolio_dtos import PortfolioCreate, PortfolioDTO, PositionCreate, PositionDTO, PositionUpdate
 from app.domain.entities.portfolio import Portfolio

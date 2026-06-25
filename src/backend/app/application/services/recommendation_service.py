@@ -1,11 +1,10 @@
 from datetime import datetime, timezone
 from decimal import Decimal
 
-from app.application.dtos.portfolio_dtos import PortfolioDTO, PositionDTO
+from app.application.dtos.portfolio_dtos import PortfolioDTO
 from app.application.dtos.recommendation_dtos import RecommendationDTO, RecommendationItemDTO
 from app.application.services.market_service import MarketService
 from app.application.services.portfolio_service import PortfolioService
-from app.application.services.stock_service import StockService
 from app.application.services.watchlist_service import WatchlistService
 from app.domain.entities.recommendation import Recommendation, RecommendationAction, RecommendationItem, RecommendationPriority, RecommendationSource
 
@@ -112,7 +111,6 @@ def _generate_rules(portfolio: PortfolioDTO | None, watchlist_symbols: set[str],
     # Build summary
     buy_count = sum(1 for i in items if i.action == RecommendationAction.BUY)
     sell_count = sum(1 for i in items if i.action == RecommendationAction.SELL)
-    watch_count = sum(1 for i in items if i.action == RecommendationAction.WATCH)
 
     summary_parts = []
     if market_regime == "Bear":

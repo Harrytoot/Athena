@@ -1,6 +1,6 @@
 import importlib
 import pkgutil
-from typing import Dict, List
+from typing import Dict
 
 from app.plugins.base import PluginBase
 

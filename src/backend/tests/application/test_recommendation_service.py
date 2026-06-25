@@ -1,12 +1,12 @@
 from decimal import Decimal
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
 from app.application.dtos.portfolio_dtos import PortfolioDTO, PositionDTO
 from app.application.dtos.watchlist_dtos import Watchlist, WatchlistItem
 from app.application.services.recommendation_service import RecommendationService
-from app.domain.entities.recommendation import RecommendationAction, RecommendationPriority
+from app.domain.entities.recommendation import RecommendationAction
 from app.providers.market.base import IndexData, Indices, MarketOverview, MarketRegime
 
 

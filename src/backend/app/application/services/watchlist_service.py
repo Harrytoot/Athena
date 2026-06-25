@@ -1,5 +1,5 @@
 from app.application.dtos.watchlist_dtos import Watchlist as WatchlistDTO, WatchlistCreate, WatchlistItemCreate, WatchlistUpdate, WatchlistItem as WatchlistItemDTO
-from app.domain.entities.watchlist import Watchlist, WatchlistItem
+from app.domain.entities.watchlist import Watchlist
 from app.domain.repositories.watchlist_repository import WatchlistRepository
 from app.providers.stock.base import StockSearchProvider, StockSearchResult
 
