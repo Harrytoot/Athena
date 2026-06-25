@@ -1,4 +1,4 @@
-import { getMarketOverview } from "@/lib/api";
+import { getMarketOverview, getMarketScore } from "@/lib/api";
 import { AiMarketSummaryCard } from "@/components/ui/AiMarketSummaryCard";
 import { HotSectorList } from "@/components/ui/HotSectorList";
 import { IndexCard } from "@/components/ui/IndexCard";
@@ -9,8 +9,14 @@ import { UpdateTimeLabel } from "@/components/ui/UpdateTimeLabel";
 
 export default async function MarketPage() {
   let data;
+  let scoreData;
   try {
     data = await getMarketOverview();
+    try {
+      scoreData = await getMarketScore();
+    } catch {
+      scoreData = null;
+    }
   } catch {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
@@ -21,6 +27,9 @@ export default async function MarketPage() {
       </div>
     );
   }
+
+  const temperature = scoreData?.score ?? data.temperature;
+  const source = scoreData?.source ?? "";
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -34,7 +43,7 @@ export default async function MarketPage() {
         </div>
 
         <div className="grid grid-cols-4 gap-4">
-          <MarketTemperatureGauge temperature={data.temperature} />
+          <MarketTemperatureGauge temperature={temperature} />
           <IndexCard index={data.indices.shanghai} label="上证指数" />
           <IndexCard index={data.indices.shenzhen} label="深证成指" />
           <IndexCard index={data.indices.chi_next} label="创业板指" />
@@ -53,6 +62,12 @@ export default async function MarketPage() {
         </div>
 
         <AiMarketSummaryCard summary={data.summary} />
+
+        {source && (
+          <div className="text-center text-xs text-gray-400">
+            Market Score: {source} | Score: {temperature}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -14,6 +14,21 @@ export async function getMarketOverview() {
   return fetchApi<{ marketRegime: string; temperature: number; indices: any; turnover: number; upCount: number; downCount: number; northbound: number; hotIndustries: any[]; hotConcepts: any[]; summary: string; updatedAt: string }>("/market/overview");
 }
 
+export async function getMarketScore() {
+  return fetchApi<{
+    score: number;
+    regime: string;
+    components: {
+      csi300: { value: number; score: number; weight: number };
+      turnover: { value: number; score: number; weight: number };
+      breadth: { value: number; decliners: number; score: number; weight: number };
+      northbound: { value: number; score: number; weight: number };
+    };
+    source: string;
+    updatedAt: string;
+  }>("/market/score");
+}
+
 export async function getStockDetail(symbol: string): Promise<StockDetail> {
   return fetchApi<StockDetail>(`/stocks/${symbol}`);
 }

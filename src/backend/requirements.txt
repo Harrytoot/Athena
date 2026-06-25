@@ -12,3 +12,4 @@ httpx>=0.27.0
 python-dotenv>=1.0.0
 pyjwt>=2.8.0
 passlib[argon2]>=1.7.4
+akshare>=1.18.0

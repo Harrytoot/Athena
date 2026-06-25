@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.services.auth_service import AuthService
+from app.application.services.market_score_service import MarketScoreService
 from app.application.services.market_service import MarketService
 from app.application.services.portfolio_service import PortfolioService
 from app.application.services.recommendation_service import RecommendationService
@@ -17,19 +18,24 @@ from app.infrastructure.persistence.models.watchlist import WatchlistModel
 from app.infrastructure.persistence.repositories.portfolio_repository import PortfolioRepositoryImpl
 from app.infrastructure.persistence.repositories.watchlist_repository import WatchlistRepositoryImpl
 from app.infrastructure.persistence.session import async_session_factory
-from app.providers.market.redis_provider import RedisMarketProvider
+from app.providers.market.akshare_provider import AkShareMarketProvider
 from app.providers.stock.redis_provider import RedisStockDetailProvider, RedisStockSearchProvider
 
 DEFAULT_USER_ID = "00000000-0000-0000-0000-000000000001"
 DEFAULT_USER_EMAIL = "alpha@athena.local"
 
-_market_service = MarketService(provider=RedisMarketProvider())
+_market_service = MarketService(provider=AkShareMarketProvider())
+_market_score_service = MarketScoreService()
 _stock_search_provider = RedisStockSearchProvider()
 _stock_service = StockService(provider=RedisStockDetailProvider())
 
 
 def get_market_service() -> MarketService:
     return _market_service
+
+
+def get_market_score_service() -> MarketScoreService:
+    return _market_score_service
 
 
 def get_stock_service() -> StockService:
