@@ -1,3 +1,4 @@
+import random
 from datetime import datetime, timezone, timedelta
 
 from app.providers.market.base import (
@@ -53,3 +54,18 @@ class MockMarketProvider(MarketProvider):
             summary="市场整体震荡上行，成交量温和放大，北向资金持续流入。半导体与AI板块领涨，市场情绪偏暖。",
             updated_at=now,
         )
+
+    async def get_trend(self) -> float:
+        return round(random.uniform(30, 90), 2)
+
+    async def get_liquidity(self) -> float:
+        return round(random.uniform(40, 85), 2)
+
+    async def get_breadth(self) -> float:
+        return round(random.uniform(35, 80), 2)
+
+    async def get_volatility(self) -> float:
+        return round(random.uniform(20, 70), 2)
+
+    async def get_sentiment(self) -> float:
+        return round(random.uniform(30, 75), 2)

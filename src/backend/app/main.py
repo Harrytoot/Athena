@@ -5,19 +5,29 @@ from fastapi import FastAPI
 from app.api import deps
 from app.api.v1 import auth, dashboard, market, portfolio, recommendation, stock, watchlist
 from app.config import settings
+from app.ingestion.ingestion_service import IngestionService
+from app.ingestion.scheduler import IngestionScheduler
+from app.infrastructure.persistence.session import async_session_factory
 from app.plugins import PluginRegistry
 
 plugin_registry = PluginRegistry()
+_ingestion_scheduler: IngestionScheduler | None = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    global _ingestion_scheduler
     if settings.ENV == "test":
         yield
         return
     await deps.ensure_default_user()
     await plugin_registry.discover_and_load()
+    ingestion_service = IngestionService(session_factory=async_session_factory)
+    _ingestion_scheduler = IngestionScheduler(service=ingestion_service)
+    _ingestion_scheduler.start()
     yield
+    if _ingestion_scheduler:
+        _ingestion_scheduler.stop()
     await plugin_registry.shutdown_all()
 
 

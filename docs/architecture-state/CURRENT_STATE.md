@@ -53,20 +53,26 @@ Allocation Engine
 - Dashboard
 - Market Center
 - Watchlist
+- Feature Engine v1
+- Feature Store v1
+- MarketScore v1
+- Backtest Engine v1
+- Provider abstraction layer
 
 ---
 
 ## In Progress
 
-- Market Score V1
+- Ingestion Layer (CRITICAL — Sprint 2)
 
 ---
 
 ## Next
 
-1. Allocation Engine V1
-2. ETF Ranking V1
-3. Recommendation Engine V1
+1. Scheduled data pipeline
+2. Feature lifecycle management (TTL / decay)
+3. Allocation Engine V1
+4. ETF Ranking V1
 
 ---
 

@@ -52,3 +52,23 @@ class MarketProvider(ABC):
     @abstractmethod
     async def get_overview(self) -> MarketOverview:
         ...
+
+    @abstractmethod
+    async def get_trend(self) -> float:
+        ...
+
+    @abstractmethod
+    async def get_liquidity(self) -> float:
+        ...
+
+    @abstractmethod
+    async def get_breadth(self) -> float:
+        ...
+
+    @abstractmethod
+    async def get_volatility(self) -> float:
+        ...
+
+    @abstractmethod
+    async def get_sentiment(self) -> float:
+        ...

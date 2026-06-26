@@ -43,16 +43,14 @@ def mock_market_svc():
 def mock_market_score_svc():
     svc = AsyncMock()
     svc.get_score = AsyncMock(return_value={
-        "score": 65,
-        "regime": "Bull",
-        "components": {
-            "csi300": {"value": 1.2, "score": 62.0, "weight": 0.30},
-            "turnover": {"value": 8500.0, "score": 65.0, "weight": 0.20},
-            "breadth": {"value": 2800, "decliners": 1200, "score": 70.0, "weight": 0.25},
-            "northbound": {"value": 5.8, "score": 59.67, "weight": 0.25},
-        },
-        "source": "real_data_v1",
-        "updatedAt": "2025-01-01T12:00:00",
+        "score": 65.5,
+        "state": "Bull",
+        "trend": 72.5,
+        "liquidity": 65.0,
+        "breadth": 55.0,
+        "volatility": 45.0,
+        "sentiment": 60.0,
+        "source": "mock_v1",
     })
     return svc
 
@@ -98,37 +96,38 @@ class TestMarketScoreAPI:
         assert response.status_code == 200
         data = response.json()
         assert "score" in data
-        assert "components" in data
+        assert "state" in data
+        assert "trend" in data
+        assert "liquidity" in data
+        assert "breadth" in data
+        assert "volatility" in data
+        assert "sentiment" in data
         assert "source" in data
-        assert "updatedAt" in data
 
-    def test_market_score_source_is_real_data_v1(self, client, mock_market_score_svc):
+    def test_market_score_source_is_mock_v1(self, client, mock_market_score_svc):
         from app.main import app
         app.dependency_overrides[get_market_score_service] = lambda: mock_market_score_svc
 
         response = client.get("/api/v1/market/score")
         data = response.json()
-        assert data["source"] == "real_data_v1"
+        assert data["source"] == "mock_v1"
 
-    def test_market_score_components_have_weights(self, client, mock_market_score_svc):
+    def test_market_score_has_all_factors(self, client, mock_market_score_svc):
         from app.main import app
         app.dependency_overrides[get_market_score_service] = lambda: mock_market_score_svc
 
         response = client.get("/api/v1/market/score")
         data = response.json()
-        components = data["components"]
-        assert "csi300" in components
-        assert "turnover" in components
-        assert "breadth" in components
-        assert "northbound" in components
-        for key in components:
-            assert "weight" in components[key]
-            assert "score" in components[key]
+        assert data["trend"] == 72.5
+        assert data["liquidity"] == 65.0
+        assert data["breadth"] == 55.0
+        assert data["volatility"] == 45.0
+        assert data["sentiment"] == 60.0
 
-    def test_market_score_breadth_has_decliners(self, client, mock_market_score_svc):
+    def test_market_score_state_is_derived(self, client, mock_market_score_svc):
         from app.main import app
         app.dependency_overrides[get_market_score_service] = lambda: mock_market_score_svc
 
         response = client.get("/api/v1/market/score")
         data = response.json()
-        assert data["components"]["breadth"]["decliners"] == 1200
+        assert data["state"] == "Bull"

@@ -10,6 +10,7 @@ from app.infrastructure.persistence.base import Base
 from app.infrastructure.persistence.models.user import UserModel  # noqa: F401
 from app.infrastructure.persistence.models.portfolio import PortfolioModel, PositionModel  # noqa: F401
 from app.infrastructure.persistence.models.watchlist import WatchlistModel, WatchlistItemModel  # noqa: F401
+from app.feature_store.models import FeatureModel  # noqa: F401
 
 config = context.config
 

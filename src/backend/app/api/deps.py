@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.application.services.auth_service import AuthService
 from app.application.services.market_score_service import MarketScoreService
 from app.application.services.market_service import MarketService
+from app.feature_store.repository import SQLAlchemyFeatureRepository
 from app.application.services.portfolio_service import PortfolioService
 from app.application.services.recommendation_service import RecommendationService
 from app.application.services.stock_service import StockService
@@ -25,21 +26,12 @@ DEFAULT_USER_ID = "00000000-0000-0000-0000-000000000001"
 DEFAULT_USER_EMAIL = "alpha@athena.local"
 
 _market_service = MarketService(provider=AkShareMarketProvider())
-_market_score_service = MarketScoreService()
 _stock_search_provider = RedisStockSearchProvider()
 _stock_service = StockService(provider=RedisStockDetailProvider())
 
 
 def get_market_service() -> MarketService:
     return _market_service
-
-
-def get_market_score_service() -> MarketScoreService:
-    return _market_score_service
-
-
-def get_stock_service() -> StockService:
-    return _stock_service
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
@@ -50,6 +42,17 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
         except Exception:
             await session.rollback()
             raise
+
+
+async def get_market_score_service(
+    session: AsyncSession = Depends(get_db),
+) -> MarketScoreService:
+    repo = SQLAlchemyFeatureRepository(session)
+    return MarketScoreService(feature_repo=repo)
+
+
+def get_stock_service() -> StockService:
+    return _stock_service
 
 
 async def get_portfolio_service(session: AsyncSession = Depends(get_db)) -> PortfolioService:

@@ -36,28 +36,12 @@ class DashboardSummary(BaseModel):
         )
 
 
-class ScoreComponent(BaseModel):
-    value: float = 0.0
-    score: float = 0.0
-    weight: float = 0.0
-
-
-class BreadthComponent(ScoreComponent):
-    decliners: int = 0
-
-
-class MarketScoreComponents(BaseModel):
-    csi300: ScoreComponent = Field(default_factory=ScoreComponent)
-    turnover: ScoreComponent = Field(default_factory=ScoreComponent)
-    breadth: BreadthComponent = Field(default_factory=BreadthComponent)
-    northbound: ScoreComponent = Field(default_factory=ScoreComponent)
-
-
 class MarketScoreResponse(BaseModel):
-    score: int = 0
-    regime: str = ""
-    components: MarketScoreComponents = Field(default_factory=MarketScoreComponents)
+    score: float = 0.0
+    state: str = ""
+    trend: float = 0.0
+    liquidity: float = 0.0
+    breadth: float = 0.0
+    volatility: float = 0.0
+    sentiment: float = 0.0
     source: str = ""
-    updated_at: str = Field(default="", alias="updatedAt")
-
-    model_config = {"populate_by_name": True}

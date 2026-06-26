@@ -20,6 +20,21 @@ REDIS_KEY_HOT_SECTORS = "athena:market:hot_sectors"
 
 class RedisMarketProvider(MarketProvider):
 
+    async def get_trend(self) -> float:
+        return 50.0
+
+    async def get_liquidity(self) -> float:
+        return 50.0
+
+    async def get_breadth(self) -> float:
+        return 50.0
+
+    async def get_volatility(self) -> float:
+        return 50.0
+
+    async def get_sentiment(self) -> float:
+        return 50.0
+
     async def get_overview(self) -> MarketOverview:
         r = await get_redis()
         raw = await r.hgetall(REDIS_KEY_MARKET_OVERVIEW)
