@@ -1,4 +1,5 @@
 import type { StockDetail } from "@/types/stock";
+import type { DecisionDTO } from "@/types/decision";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
@@ -31,4 +32,8 @@ export async function getMarketScore() {
 
 export async function getStockDetail(symbol: string): Promise<StockDetail> {
   return fetchApi<StockDetail>(`/stocks/${symbol}`);
+}
+
+export async function getDecision(symbol: string): Promise<DecisionDTO> {
+  return fetchApi<DecisionDTO>(`/decision/${symbol}`);
 }

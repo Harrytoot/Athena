@@ -1,24 +1,21 @@
 import Link from "next/link";
 import { getStockDetail } from "@/lib/api";
-import { AiSummaryCard } from "@/components/ui/AiSummaryCard";
-import { MoneyFlowCard } from "@/components/ui/MoneyFlowCard";
-import { TechnicalCard } from "@/components/ui/TechnicalCard";
+import StockChartPanel from "./StockChartPanel";
+import DecisionCenter from "@/components/decision/DecisionCenter";
+import DetailDataPanel from "./DetailDataPanel";
+import { cn } from "@/lib/utils";
 
-export default async function StockDetailPage({
-  params,
-}: {
-  params: { symbol: string };
-}) {
+export default async function StockDetailPage({ params }: { params: { symbol: string } }) {
   const { symbol } = params;
   let data;
   try {
     data = await getStockDetail(symbol);
   } catch {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="text-center text-gray-500">
+      <div className="flex h-full items-center justify-center">
+        <div className="text-center text-muted-foreground">
           <p className="text-lg font-medium">股票数据加载失败</p>
-          <Link href="/watchlist" className="mt-2 text-sm text-blue-600 hover:underline">
+          <Link href="/watchlist" className="mt-2 inline-block text-sm text-primary hover:underline">
             返回自选股
           </Link>
         </div>
@@ -27,82 +24,57 @@ export default async function StockDetailPage({
   }
 
   const isUp = data.changePct >= 0;
-  const color = isUp ? "text-red-600" : "text-green-600";
-  const bg = isUp ? "bg-red-50" : "bg-green-50";
+  const changeColor = isUp ? "text-up" : "text-down";
+  const changeBg = isUp ? "bg-up/15 text-up" : "bg-down/15 text-down";
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="mx-auto max-w-5xl space-y-6">
-        {/* Breadcrumb */}
-        <div className="text-xs text-gray-400">
-          <Link href="/watchlist" className="hover:text-blue-600">自选股</Link>
-          <span className="mx-1">/</span>
-          <span className="text-gray-600">{symbol}</span>
-        </div>
-
-        {/* Stock Header */}
-        <div className="rounded-lg border bg-white p-6 shadow-sm">
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                {data.name} <span className="text-lg font-normal text-gray-400">{data.symbol}</span>
-              </h1>
-              <div className="mt-2 flex items-baseline gap-3">
-                <span className={`text-3xl font-bold ${color}`}>
-                  {data.price.toFixed(2)}
-                </span>
-                <span className={`rounded px-2 py-0.5 text-sm font-semibold ${bg} ${color}`}>
-                  {data.changePct >= 0 ? "+" : ""}{data.changePct.toFixed(2)}%
-                </span>
-              </div>
-            </div>
+    <div className="flex h-full flex-col gap-3 p-3">
+      {/* Header Bar */}
+      <div className="panel flex items-center gap-6 px-4 py-3">
+        <div>
+          <div className="flex items-baseline gap-2">
+            <h1 className="text-xl font-bold text-foreground">{data.name}</h1>
+            <span className="text-sm text-muted-foreground">{data.symbol}</span>
           </div>
-
-          <div className="mt-6 grid grid-cols-4 gap-4">
-            <Stat label="开盘" value={data.open.toFixed(2)} />
-            <Stat label="最高" value={data.high.toFixed(2)} color="text-red-600" />
-            <Stat label="最低" value={data.low.toFixed(2)} color="text-green-600" />
-            <Stat label="成交量" value={`${(data.volume / 10000).toFixed(0)}万手`} />
+          <div className="mt-1 flex items-baseline gap-3">
+            <span className={`font-mono text-2xl font-bold ${changeColor}`}>
+              {data.price.toFixed(2)}
+            </span>
+            <span className={cn("rounded px-2 py-0.5 font-mono text-sm font-semibold", changeBg)}>
+              {isUp ? "+" : ""}{data.changePct.toFixed(2)}%
+            </span>
           </div>
         </div>
+        <div className="ml-auto grid grid-cols-4 gap-6">
+          <Stat label="开盘" value={data.open.toFixed(2)} />
+          <Stat label="最高" value={data.high.toFixed(2)} />
+          <Stat label="最低" value={data.low.toFixed(2)} />
+          <Stat label="成交量" value={`${(data.volume / 10000).toFixed(0)}万`} />
+        </div>
+      </div>
 
-        {/* Technical Indicators */}
-        <TechnicalCard data={data.technicalIndicators} price={data.price} />
-
-        {/* Fundamental + Money Flow */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="rounded-lg border bg-white p-4 shadow-sm">
-            <h3 className="mb-3 text-sm font-semibold text-gray-700">基本面</h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-500">市盈率 (PE)</span>
-                <span className="font-medium">{data.peRatio?.toFixed(2) ?? "--"}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">市净率 (PB)</span>
-                <span className="font-medium">{data.pbRatio?.toFixed(2) ?? "--"}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">总市值</span>
-                <span className="font-medium">{data.marketCap ? `${data.marketCap.toFixed(2)}亿` : "--"}</span>
-              </div>
-            </div>
-          </div>
-          <MoneyFlowCard data={data.moneyFlow} />
+      {/* Main: 70% Chart + 30% DecisionCenter */}
+      <div className="flex flex-1 gap-3 min-h-0">
+        <div className="panel flex-1 overflow-hidden" style={{ flex: "0 0 70%" }}>
+          <StockChartPanel symbol={symbol} />
         </div>
 
-        {/* AI Summary */}
-        <AiSummaryCard data={data.aiAnalysis} />
+        <div className="flex flex-col gap-3" style={{ flex: "0 0 30%" }}>
+          <div className="flex-1 min-h-0">
+            <DecisionCenter symbol={symbol} name={data.name} price={data.price} />
+          </div>
+          <DetailDataPanel data={data} />
+        </div>
       </div>
     </div>
   );
 }
 
-function Stat({ label, value, color }: { label: string; value: string; color?: string }) {
+function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="text-center">
-      <div className="text-xs text-gray-400">{label}</div>
-      <div className={`mt-1 font-mono text-sm font-semibold ${color ?? "text-gray-900"}`}>{value}</div>
+      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className="mt-0.5 font-mono text-sm font-semibold text-foreground">{value}</div>
     </div>
   );
 }

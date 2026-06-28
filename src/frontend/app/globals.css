@@ -1,3 +1,60 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 29% 6%;
+    --foreground: 210 40% 98%;
+    --card: 224 26% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 224 26% 11%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 189 100% 43%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 217 19% 27%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 19% 27%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 189 100% 43%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 11 100% 59%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 224 15% 19%;
+    --input: 224 15% 19%;
+    --ring: 189 100% 43%;
+    --radius: 0.5rem;
+    --chart-1: 189 100% 43%;
+    --chart-2: 11 100% 59%;
+    --chart-3: 40 100% 60%;
+    --chart-4: 160 60% 45%;
+    --chart-5: 280 65% 60%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .trading-up {
+    @apply text-up;
+  }
+
+  .trading-down {
+    @apply text-down;
+  }
+
+  .panel {
+    @apply bg-card border border-border rounded-lg;
+  }
+
+  .bento-grid {
+    @apply grid gap-3 h-full;
+  }
+}

@@ -36,6 +36,7 @@ export default function WatchlistPage() {
 
   useEffect(() => {
     refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCreate = async () => {
@@ -110,7 +111,7 @@ export default function WatchlistPage() {
                     <th className="px-4 py-3 text-right">涨跌幅</th>
                     <th className="px-4 py-3">标签</th>
                     <th className="px-4 py-3">备注</th>
-                    <th className="px-4 py-3 w-16"></th>
+                    <th className="px-4 py-3 w-16" />
                   </tr>
                 </thead>
                 <tbody>

@@ -1,13 +1,8 @@
-function formatNum(v: number) {
-  if (v >= 10000) {
-    return `${(v / 10000).toFixed(0)}万亿`;
-  }
-  return v.toLocaleString("zh-CN");
-}
+import { cn } from "@/lib/utils";
 
-function formatFlow(v: number) {
-  const sign = v >= 0 ? "+" : "";
-  return `${sign}${v.toFixed(1)}亿`;
+function formatNum(v: number) {
+  if (v >= 10000) return `${(v / 10000).toFixed(0)}万亿`;
+  return v.toLocaleString("zh-CN");
 }
 
 export function MarketStatsRow({
@@ -22,14 +17,14 @@ export function MarketStatsRow({
   northbound: number;
 }) {
   return (
-    <div className="grid grid-cols-4 gap-4">
+    <div className="grid grid-cols-4 gap-3">
       <StatBox label="成交额" value={`${(turnover / 10000).toFixed(2)}万亿`} />
-      <StatBox label="上涨家数" value={upCount.toLocaleString()} color="text-red-600" />
-      <StatBox label="下跌家数" value={downCount.toLocaleString()} color="text-green-600" />
+      <StatBox label="上涨家数" value={upCount.toLocaleString()} color="text-up" />
+      <StatBox label="下跌家数" value={downCount.toLocaleString()} color="text-down" />
       <StatBox
         label="北向资金"
-        value={formatFlow(northbound)}
-        color={northbound >= 0 ? "text-red-600" : "text-green-600"}
+        value={`${northbound >= 0 ? "+" : ""}${northbound.toFixed(1)}亿`}
+        color={northbound >= 0 ? "text-up" : "text-down"}
       />
     </div>
   );
@@ -37,9 +32,9 @@ export function MarketStatsRow({
 
 function StatBox({ label, value, color }: { label: string; value: string; color?: string }) {
   return (
-    <div className="rounded-lg border bg-white p-4 text-center shadow-sm">
-      <div className="text-sm text-gray-500">{label}</div>
-      <div className={`mt-1 text-xl font-bold ${color ?? "text-gray-900"}`}>{value}</div>
+    <div className="panel p-4 text-center">
+      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className={cn("mt-1 text-xl font-bold font-mono", color ?? "text-foreground")}>{value}</div>
     </div>
   );
 }

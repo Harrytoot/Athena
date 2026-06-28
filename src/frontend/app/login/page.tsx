@@ -27,42 +27,38 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-sm rounded-lg border bg-white p-8 shadow-sm">
-        <h1 className="mb-6 text-center text-2xl font-bold text-gray-900">Athena</h1>
+    <div className="flex h-full items-center justify-center">
+      <div className="panel w-full max-w-sm p-8">
+        <h1 className="mb-6 text-center text-2xl font-bold text-foreground">Athena</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="用户名"
-              required
-              className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="密码"
-              required
-              className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          {error && <div className="text-xs text-red-500">{error}</div>}
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="用户名"
+            required
+            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="密码"
+            required
+            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          />
+          {error && <div className="text-xs text-destructive">{error}</div>}
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-blue-600 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            className="w-full rounded-lg bg-primary py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
           >
             {loading ? "登录中..." : "登录"}
           </button>
         </form>
-        <div className="mt-4 text-center text-sm text-gray-500">
+        <div className="mt-4 text-center text-sm text-muted-foreground">
           还没有账号？
-          <a href="/register" className="ml-1 text-blue-600 hover:underline">注册</a>
+          <a href="/register" className="ml-1 text-primary hover:underline">注册</a>
         </div>
       </div>
     </div>

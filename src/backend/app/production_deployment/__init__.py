@@ -1,15 +1,15 @@
-from app.production_deployment.deployment_config import DeploymentConfig, deployment_config
+from app.production_deployment.deployment_config import DeploymentSettings, deployment_config
 from app.production_deployment.environment_switcher import (
     EnvironmentSwitcher,
     EnvironmentType,
     EnvironmentConfig,
 )
 from app.production_deployment.runtime_manager import RuntimeManager, Component, ComponentStatus
-from app.production_deployment.secret_manager import SecretManager, EnvSecretManager
+from app.production_deployment.secret_manager import SecretManager, EnvSecretBackend
 from app.production_deployment.service_orchestrator import ServiceOrchestrator, ServiceStatus
 
 __all__ = [
-    "DeploymentConfig",
+    "DeploymentSettings",
     "deployment_config",
     "EnvironmentSwitcher",
     "EnvironmentType",
@@ -18,7 +18,7 @@ __all__ = [
     "Component",
     "ComponentStatus",
     "SecretManager",
-    "EnvSecretManager",
+    "EnvSecretBackend",
     "ServiceOrchestrator",
     "ServiceStatus",
 ]

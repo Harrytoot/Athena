@@ -161,7 +161,15 @@ domains/
 
 ---
 
-## 11. Provider Architecture
+## 11. Frontend Specification
+
+| 文档 | 路径 | 状态 |
+|------|------|------|
+| FRONTEND-001 | [frontend/FRONTEND-001-sprint-1-specification.md](frontend/FRONTEND-001-sprint-1-specification.md) | 🟢 v1.1.0 |
+
+---
+
+## 12. Provider Architecture
 
 | Provider | 接口文件 | Mock 实现 | 状态 |
 |----------|---------|----------|------|
@@ -173,7 +181,7 @@ domains/
 
 ---
 
-## 12. Agent Protocol（设计冻结）
+## 13. Agent Protocol（设计冻结）
 
 | 条目 | 规范 | 实现 |
 |------|------|------|
@@ -186,7 +194,7 @@ domains/
 
 ---
 
-## 13. DSL Specification（设计冻结）
+## 14. DSL Specification（设计冻结）
 
 | 条目 | 规范 | 实现 |
 |------|------|------|
@@ -198,7 +206,7 @@ domains/
 
 ---
 
-## 14. UI Design System
+## 15. UI Design System
 
 | 条目 | 状态 |
 |------|------|
@@ -206,34 +214,35 @@ domains/
 | 布局 | Sidebar + Main Content ✅ |
 | 颜色系统 | 红涨绿跌 (中国习惯) ✅ |
 | 组件库 | 15+ 组件已创建 ✅ |
-| 设计规范文档 | ⚪ 待创建 |
+| 设计规范文档 | [FRONTEND-001](frontend/FRONTEND-001-sprint-1-specification.md) ✅ |
 
 ---
 
-## 15. Development Standards
+## 16. Development Standards
 
 | 条目 | 状态 |
 |------|------|
 | 语言 | Python 3.12 (Backend) / TypeScript (Frontend) ✅ |
-| 代码风格 | Ruff (Python) / ESLint (TS) ⚪ |
+| 代码风格 | Ruff (Python) / ESLint + Prettier (TS) ✅ |
 | 提交规范 | Conventional Commits ✅ |
 | 分支策略 | Trunk-based (master) ✅ |
 | TDD | Test before code (ADR-005) ⚪ |
 
 ---
 
-## 16. Testing Strategy
+## 17. Testing Strategy
 
 | 层级 | 框架 | 状态 |
 |------|------|------|
-| Unit Test | pytest + pytest-asyncio | ⚪ |
+| Frontend Unit Test | Vitest + Testing Library | 🟢 12 cases |
+| Backend Unit Test | pytest + pytest-asyncio | ⚪ |
 | Integration Test | httpx (FastAPI TestClient) | ⚪ |
 | Contract Test | OpenAPI schema validation | ⚪ |
 | E2E Test | Playwright / TBD | ⚪ Sprint 2 |
 
 ---
 
-## 17. OpenCode Task Tree
+## 18. OpenCode Task Tree
 
 | Epic | 任务 ID | 状态 |
 |------|---------|------|
@@ -246,7 +255,7 @@ domains/
 
 ---
 
-## 18. Future Architecture Assets（Gap Analysis）
+## 19. Future Architecture Assets（Gap Analysis）
 
 | 待建资产 | 计划 |
 |----------|------|

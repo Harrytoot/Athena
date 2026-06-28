@@ -53,6 +53,7 @@
 | [api/](api/) | API 契约 | 1 |
 | [database/](database/) | 数据库设计 | 1 |
 | [data/](data/) | 数据/特征合约 | 1 |
+| [frontend/](frontend/) | 前端技术规范 | 1 |
 | [prd/](prd/) | 产品需求文档 | 1 |
 | [engineering/](engineering/) | 工程标准：编码规范, Git 流程, 测试策略, 错误码, 配置规范 | 1+5 |
 
@@ -97,7 +98,7 @@
 | `RFC-` | Request for Comments | `rfc/` | 不适用 |
 | `AES-` | Architecture Evolution Strategy | `aes/` | 是 |
 | `AMS-` | Athena Master Specification | `ams/` | 是 |
-| `PRD-` | Product Requirements Document | `prd/` | 否 |
+| `FRONTEND-` | Frontend Technical Specification | `frontend/` | 否 |
 | `API-` | API Specification | `api/` | 是 |
 | `DB-` | Database Design | `database/` | 是 |
 | `TASK-` | Task/Epic Breakdown | `tasks/` | 否 |

@@ -28,62 +28,25 @@ export default function RegisterPage() {
     }
   };
 
+  const inputClass = "w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary";
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-sm rounded-lg border bg-white p-8 shadow-sm">
-        <h1 className="mb-6 text-center text-2xl font-bold text-gray-900">注册 Athena</h1>
+    <div className="flex h-full items-center justify-center">
+      <div className="panel w-full max-w-sm p-8">
+        <h1 className="mb-6 text-center text-2xl font-bold text-foreground">注册 Athena</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="用户名"
-              required
-              className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="邮箱"
-              required
-              className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <input
-              type="text"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="显示名称（选填）"
-              className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="密码"
-              required
-              className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          {error && <div className="text-xs text-red-500">{error}</div>}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-blue-600 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-          >
+          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="用户名" required className={inputClass} />
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="邮箱" required className={inputClass} />
+          <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="显示名称（选填）" className={inputClass} />
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="密码" required className={inputClass} />
+          {error && <div className="text-xs text-destructive">{error}</div>}
+          <button type="submit" disabled={loading} className="w-full rounded-lg bg-primary py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
             {loading ? "注册中..." : "注册"}
           </button>
         </form>
-        <div className="mt-4 text-center text-sm text-gray-500">
+        <div className="mt-4 text-center text-sm text-muted-foreground">
           已有账号？
-          <a href="/login" className="ml-1 text-blue-600 hover:underline">登录</a>
+          <a href="/login" className="ml-1 text-primary hover:underline">登录</a>
         </div>
       </div>
     </div>

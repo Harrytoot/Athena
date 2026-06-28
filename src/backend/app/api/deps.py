@@ -7,6 +7,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.services.auth_service import AuthService
+from app.application.services.backtest_service import BacktestService
+from app.application.services.decision_service import DecisionService
+from app.application.services.execution_service import ExecutionService
 from app.application.services.market_score_service import MarketScoreService
 from app.application.services.market_service import MarketService
 from app.feature_store.repository import SQLAlchemyFeatureRepository
@@ -49,6 +52,28 @@ async def get_market_score_service(
 ) -> MarketScoreService:
     repo = SQLAlchemyFeatureRepository(session)
     return MarketScoreService(feature_repo=repo)
+
+
+async def get_decision_service(
+    session: AsyncSession = Depends(get_db),
+) -> DecisionService:
+    repo = SQLAlchemyFeatureRepository(session)
+    market_score_service = MarketScoreService(feature_repo=repo)
+    return DecisionService(
+        market_score_service=market_score_service,
+        stock_service=_stock_service,
+    )
+
+
+async def get_execution_service(
+    session: AsyncSession = Depends(get_db),
+) -> ExecutionService:
+    repo = SQLAlchemyFeatureRepository(session)
+    market_score_service = MarketScoreService(feature_repo=repo)
+    return ExecutionService(
+        market_score_service=market_score_service,
+        stock_service=_stock_service,
+    )
 
 
 def get_stock_service() -> StockService:
@@ -123,6 +148,13 @@ security_scheme = HTTPBearer(auto_error=False)
 
 async def get_auth_service(session: AsyncSession = Depends(get_db)) -> AuthService:
     return AuthService(session)
+
+
+async def get_backtest_service(
+    session: AsyncSession = Depends(get_db),
+) -> BacktestService:
+    repo = SQLAlchemyFeatureRepository(session)
+    return BacktestService(feature_repo=repo)
 
 
 async def get_current_user(

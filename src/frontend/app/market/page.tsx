@@ -19,10 +19,10 @@ export default async function MarketPage() {
     }
   } catch {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="text-lg font-medium text-gray-700">无法连接到后端服务</div>
-          <div className="mt-2 text-sm text-gray-500">请确保 docker-compose up 已启动</div>
+      <div className="flex h-full items-center justify-center">
+        <div className="text-center text-muted-foreground">
+          <div className="text-lg font-medium">无法连接到后端服务</div>
+          <div className="mt-2 text-sm">请确保 docker-compose up 已启动</div>
         </div>
       </div>
     );
@@ -32,17 +32,17 @@ export default async function MarketPage() {
   const source = scoreData?.source ?? "";
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="mx-auto max-w-7xl space-y-6">
+    <div className="h-full overflow-y-auto p-4">
+      <div className="mx-auto max-w-7xl space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-gray-900">市场</h1>
+            <h1 className="text-2xl font-bold text-foreground">市场</h1>
             <MarketRegimeBadge regime={data.marketRegime} />
           </div>
           <UpdateTimeLabel time={data.updatedAt} />
         </div>
 
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-4 gap-3">
           <MarketTemperatureGauge temperature={temperature} />
           <IndexCard index={data.indices.shanghai} label="上证指数" />
           <IndexCard index={data.indices.shenzhen} label="深证成指" />
@@ -56,7 +56,7 @@ export default async function MarketPage() {
           northbound={data.northbound}
         />
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           <HotSectorList title="热点行业 Top10" items={data.hotIndustries} />
           <HotSectorList title="热点概念 Top10" items={data.hotConcepts} />
         </div>
@@ -64,7 +64,7 @@ export default async function MarketPage() {
         <AiMarketSummaryCard summary={data.summary} />
 
         {source && (
-          <div className="text-center text-xs text-gray-400">
+          <div className="text-center text-xs text-muted-foreground">
             Market Score: {source} | Score: {temperature}
           </div>
         )}

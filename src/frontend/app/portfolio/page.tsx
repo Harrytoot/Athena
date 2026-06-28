@@ -169,12 +169,12 @@ export default function PortfolioPage() {
                 <th className="px-4 py-3 text-right">市值</th>
                 <th className="px-4 py-3 text-right">盈亏</th>
                 <th className="px-4 py-3 text-right">仓位</th>
-                <th className="px-4 py-3 w-12"></th>
+                <th className="px-4 py-3 w-12" />
               </tr>
             </thead>
             <tbody>
               {portfolio.positions.length === 0 ? (
-                <tr><td colSpan={9} className="px-4 py-12 text-center text-sm text-gray-400">暂无持仓，点击"添加持仓"开始</td></tr>
+                <tr><td colSpan={9} className="px-4 py-12 text-center text-sm text-gray-400">暂无持仓，点击{'"'}添加持仓{'"'}开始</td></tr>
               ) : (
                 portfolio.positions.map((pos) => {
                   const pnlUp = pos.pnl >= 0;

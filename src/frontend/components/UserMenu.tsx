@@ -1,37 +1,30 @@
 "use client";
 
-import { clearToken, isLoggedIn } from "@/lib/auth";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { LogOut, User } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function UserMenu() {
-  const router = useRouter();
-  const [loggedIn, setLoggedIn] = useState(false);
-
-  useEffect(() => {
-    setLoggedIn(isLoggedIn());
-  }, []);
-
-  const handleLogout = useCallback(() => {
-    clearToken();
-    setLoggedIn(false);
-    router.push("/login");
-  }, [router]);
+  const { loggedIn, logout } = useAuth();
 
   if (loggedIn) {
     return (
       <button
-        onClick={handleLogout}
-        className="text-sm text-gray-500 hover:text-red-500"
+        onClick={logout}
+        className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-destructive"
       >
+        <LogOut className="h-4 w-4" />
         退出
       </button>
     );
   }
 
   return (
-    <Link href="/login" className="text-sm text-blue-600 hover:underline">
+    <Link
+      href="/login"
+      className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
+    >
+      <User className="h-4 w-4" />
       登录
     </Link>
   );

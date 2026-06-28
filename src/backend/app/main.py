@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.api import deps
-from app.api.v1 import auth, dashboard, market, portfolio, recommendation, stock, watchlist
+from app.api.v1 import auth, backtest, dashboard, decision, execution, market, portfolio, recommendation, stock, watchlist
 from app.config import settings
 from app.ingestion.ingestion_service import IngestionService
 from app.ingestion.scheduler import IngestionScheduler
@@ -95,6 +95,9 @@ app.include_router(watchlist.router, prefix="/api/v1")
 app.include_router(stock.router, prefix="/api/v1")
 app.include_router(portfolio.router, prefix="/api/v1")
 app.include_router(recommendation.router, prefix="/api/v1")
+app.include_router(backtest.router, prefix="/api/v1")
+app.include_router(decision.router, prefix="/api/v1")
+app.include_router(execution.router, prefix="/api/v1")
 app.include_router(auth.router, prefix="/api/v1")
 
 
