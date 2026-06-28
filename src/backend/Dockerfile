@@ -1,7 +1,6 @@
 FROM python:3.12-slim
 
-ARG PIP_INDEX_URL=https://pypi.org/simple/
-ENV PIP_INDEX_URL=${PIP_INDEX_URL}
+RUN pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
 
 WORKDIR /app
 
