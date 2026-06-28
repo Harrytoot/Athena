@@ -48,6 +48,47 @@ function generateFallbackDecision(symbol: string, name: string): DecisionDTO {
     action: pick.action,
     actionLabel: pick.actionLabel,
     explanation: "基于多因子综合分析的结果，建议参考上述信号。",
+    factors: [
+      { name: "momentum", label: "动量因子", value: 0.72, weight: 0.25, contribution: 0.18, isBullish: true, assessment: "趋势强度中等偏上" },
+      { name: "value", label: "价值因子", value: 0.45, weight: 0.2, contribution: 0.09, isBullish: false, assessment: "估值处于合理区间上沿" },
+      { name: "quality", label: "质量因子", value: 0.68, weight: 0.2, contribution: 0.14, isBullish: true, assessment: "盈利质量稳健" },
+      { name: "sentiment", label: "情绪因子", value: 0.55, weight: 0.15, contribution: 0.08, isBullish: true, assessment: "市场情绪中性偏乐观" },
+      { name: "volatility", label: "波动因子", value: 0.38, weight: 0.2, contribution: 0.08, isBullish: false, assessment: "波动率处于中位水平" },
+    ],
+    signalSemantic: {
+      direction: pick.signal,
+      directionLabel: pick.label,
+      strength: pick.confidence / 100,
+      baseConfidence: pick.confidence / 100,
+    },
+    riskSemantic: {
+      overallLevel: pick.confidence > 70 ? "low" : pick.confidence > 40 ? "medium" : "high",
+      drawdownRisk: 0.35,
+      volatilityRisk: 0.42,
+      correlationRisk: 0.28,
+      scenarioVulnerability: 0.3,
+      warnings: ["局部市场波动可能加剧"],
+    },
+    scenarioSemantic: {
+      stabilityScore: 0.65,
+      worstCaseScoreChange: -0.15,
+      stateChangeCount: 2,
+      entries: [],
+    },
+    executionSemantic: {
+      feasibility: 0.85,
+      estimatedSlippageBps: 5.2,
+      estimatedFillRate: 0.92,
+      qualityGrade: "good",
+      warnings: [],
+    },
+    consistency: {
+      isConsistent: true,
+      contradictions: [],
+      consistencyScore: 0.88,
+    },
+    confidenceScoreNormalized: pick.confidence / 100,
+    semanticVersion: "1.0.0",
   };
 }
 
