@@ -37,6 +37,8 @@ services:
   postgres:
     image: postgres:16-alpine
     restart: unless-stopped
+    security_opt:
+      - seccomp=unconfined
     env_file: .env.production
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
