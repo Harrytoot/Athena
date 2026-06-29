@@ -29,6 +29,8 @@ services:
       MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
       MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
       MINIO_BUCKET: athena
+      MARKET_PROVIDER: redis
+      REALTIME_ENABLED: "true"
     networks:
       - athena
     depends_on:

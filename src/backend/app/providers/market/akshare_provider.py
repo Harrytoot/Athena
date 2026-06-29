@@ -276,4 +276,5 @@ class AkShareMarketProvider(MarketProvider):
             hotConcepts=[],
             summary=summary,
             updatedAt=now,
+            data_quality="live",
         )

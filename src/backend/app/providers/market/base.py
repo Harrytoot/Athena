@@ -43,6 +43,7 @@ class MarketOverview(BaseModel):
     hot_concepts: list[HotItem] = Field(default_factory=list, alias="hotConcepts")
     summary: str = ""
     updated_at: Optional[datetime] = Field(default=None, alias="updatedAt")
+    data_quality: str = Field(default="unknown", alias="dataQuality")
 
     model_config = {"populate_by_name": True}
 

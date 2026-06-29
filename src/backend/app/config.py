@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_MINUTES: int = 1440
 
+    MARKET_PROVIDER: str = "mock"
+    REALTIME_ENABLED: bool = False
+
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
 

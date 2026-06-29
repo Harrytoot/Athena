@@ -11,11 +11,22 @@ import { MarketStatsRow } from "@/components/ui/MarketStatsRow";
 import { MarketTemperatureGauge } from "@/components/ui/MarketTemperatureGauge";
 import { UpdateTimeLabel } from "@/components/ui/UpdateTimeLabel";
 
+function isEmptyMarketData(data: MarketOverview): boolean {
+  return (
+    data.indices.shanghai.price === 0 &&
+    data.temperature === 0 &&
+    data.turnover === 0 &&
+    data.upCount === 0 &&
+    data.downCount === 0
+  );
+}
+
 export default function DashboardPage() {
   const [data, setData] = useState<MarketOverview | null>(null);
   const [scoreData, setScoreData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -30,8 +41,11 @@ export default function DashboardPage() {
         } catch {
           // score is optional
         }
-      } catch {
-        if (!cancelled) setError(true);
+      } catch (e: any) {
+        if (!cancelled) {
+          setError(true);
+          setErrorMsg(e?.message || "");
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -43,7 +57,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="font-mono text-sm text-muted-foreground animate-pulse">加载市场数据...</div>
+        <div className="font-mono text-sm text-muted-foreground animate-pulse">正在连接数据源...</div>
       </div>
     );
   }
@@ -53,7 +67,25 @@ export default function DashboardPage() {
       <div className="flex h-full items-center justify-center">
         <div className="text-center text-muted-foreground">
           <div className="text-lg font-medium">无法连接到后端服务</div>
-          <div className="mt-2 text-sm">请确保 docker-compose up 已启动</div>
+          <div className="mt-2 text-sm">
+            {errorMsg || "请确保 docker-compose up 已启动"}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isEmptyMarketData(data)) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-center text-muted-foreground space-y-2">
+          <div className="text-lg font-medium">市场数据暂未就绪</div>
+          <div className="text-sm">
+            等待数据同步完成，请稍后刷新页面
+          </div>
+          <div className="text-xs opacity-50">
+            数据质量: {data.dataQuality || "unknown"}
+          </div>
         </div>
       </div>
     );
@@ -68,6 +100,11 @@ export default function DashboardPage() {
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold text-foreground">市场概览</h1>
             <MarketRegimeBadge regime={data.marketRegime} />
+            {data.dataQuality && data.dataQuality !== "unknown" && (
+              <span className="text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground">
+                {data.dataQuality}
+              </span>
+            )}
           </div>
           <UpdateTimeLabel time={data.updatedAt} />
         </div>
