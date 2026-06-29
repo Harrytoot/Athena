@@ -207,9 +207,10 @@ export default function PortfolioPage() {
 }
 
 function formatMoney(v: number) {
-  if (Math.abs(v) >= 1e8) return `${(v / 1e8).toFixed(2)}亿`;
-  if (Math.abs(v) >= 1e4) return `${(v / 1e4).toFixed(2)}万`;
-  return v.toFixed(2);
+  const n = Number(v);
+  if (Math.abs(n) >= 1e8) return `${(n / 1e8).toFixed(2)}亿`;
+  if (Math.abs(n) >= 1e4) return `${(n / 1e4).toFixed(2)}万`;
+  return n.toFixed(2);
 }
 
 function SummaryCard({ label, value, valueClass, sub, subClass }: { label: string; value: string; valueClass?: string; sub?: string; subClass?: string }) {
