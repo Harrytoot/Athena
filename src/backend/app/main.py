@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 from contextlib import asynccontextmanager
@@ -56,11 +57,22 @@ async def lifespan(app: FastAPI):
 
     akshare_provider = AkShareMarketProvider()
     try:
-        logger.info("Running startup hydration...")
-        await ingestion_service.run_manual(provider=akshare_provider)
-        overview = await akshare_provider.get_overview()
-        await ingestion_service.cache_overview_to_redis(overview)
+        logger.info("Running startup hydration (30s timeout)...")
+        await asyncio.wait_for(
+            ingestion_service.run_manual(provider=akshare_provider),
+            timeout=30,
+        )
+        overview = await asyncio.wait_for(
+            akshare_provider.get_overview(),
+            timeout=15,
+        )
+        await asyncio.wait_for(
+            ingestion_service.cache_overview_to_redis(overview),
+            timeout=10,
+        )
         logger.info("Startup hydration complete: temperature=%d", overview.temperature)
+    except asyncio.TimeoutError:
+        logger.warning("Startup hydration timed out, continuing with cached/default data")
     except Exception:
         logger.warning("Startup hydration failed, system will serve cached/default data")
 
