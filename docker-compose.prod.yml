@@ -23,6 +23,9 @@ services:
       APP_NAME: Athena
       APP_VERSION: 0.1.0
       ENV: production
+      DEV_MODE: "false"
+      REDIS_ENABLED: "true"
+      BOOTSTRAP_ON_STARTUP: "true"
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       REDIS_URL: redis://redis:6379/0
       MINIO_ENDPOINT: minio:9000

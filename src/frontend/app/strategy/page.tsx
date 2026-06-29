@@ -25,6 +25,7 @@ import {
   updateStrategy,
   type StrategyDTO,
 } from "@/lib/strategy-api";
+import type { StrategyNodeData } from "@/stores/strategy-store";
 
 const nodeTypes = { strategyNode: StrategyNode };
 
@@ -72,7 +73,7 @@ function StrategyFlow() {
   const handleLoadStrategy = async (id: string) => {
     try {
       const s = await getStrategyApi(id);
-      setNodes(s.nodes as Node[]);
+      setNodes(s.nodes as unknown as Node<StrategyNodeData>[]);
       setEdges(s.edges as Edge[]);
       setActiveStrategyId(s.id);
       setActiveName(s.name);
@@ -82,7 +83,7 @@ function StrategyFlow() {
   const handleLoadTemplate = async (id: string) => {
     try {
       const s = await getStrategyApi(id);
-      setNodes(s.nodes as Node[]);
+      setNodes(s.nodes as unknown as Node<StrategyNodeData>[]);
       setEdges(s.edges as Edge[]);
       setActiveStrategyId(null);
       setActiveName("");
@@ -98,18 +99,22 @@ function StrategyFlow() {
 
   const handleSave = async () => {
     try {
+      // eslint-disable-next-line
+      const _nodes = nodes as any[];
+      // eslint-disable-next-line
+      const _edges = edges as any[];
       if (activeStrategyId) {
         await updateStrategy(activeStrategyId, {
-          nodes: nodes as Record<string, unknown>[],
-          edges: edges as Record<string, unknown>[],
+          nodes: _nodes,
+          edges: _edges,
         });
       } else {
         const created = await createStrategy({
           name: saveName || "未命名策略",
           description: saveDesc,
           category: saveCategory,
-          nodes: nodes as Record<string, unknown>[],
-          edges: edges as Record<string, unknown>[],
+          nodes: _nodes,
+          edges: _edges,
         });
         setActiveStrategyId(created.id);
         setActiveName(created.name);
