@@ -17,6 +17,7 @@ from app.application.services.portfolio_service import PortfolioService
 from app.application.services.recommendation_service import RecommendationService
 from app.application.services.stock_service import StockService
 from app.application.services.watchlist_service import WatchlistService
+from app.config import settings
 from app.infrastructure.persistence.models.user import UserModel
 from app.infrastructure.persistence.models.watchlist import WatchlistModel
 from app.infrastructure.persistence.repositories.portfolio_repository import PortfolioRepositoryImpl
@@ -26,6 +27,8 @@ from app.providers.market.akshare_provider import AkShareMarketProvider
 from app.providers.market.base import MarketProvider
 from app.providers.market.mock_provider import MockMarketProvider
 from app.providers.market.redis_provider import RedisMarketProvider
+from app.providers.stock.mock_provider import MockStockSearchProvider
+from app.providers.stock.mock_detail_provider import MockStockDetailProvider
 from app.providers.stock.redis_provider import RedisStockDetailProvider, RedisStockSearchProvider
 
 DEFAULT_USER_ID = "00000000-0000-0000-0000-000000000001"
@@ -33,7 +36,6 @@ DEFAULT_USER_EMAIL = "alpha@athena.local"
 
 
 def _create_market_provider() -> MarketProvider:
-    from app.config import settings
     provider_type = settings.MARKET_PROVIDER
     if provider_type == "redis":
         return RedisMarketProvider()
@@ -44,8 +46,13 @@ def _create_market_provider() -> MarketProvider:
 
 
 _market_service = MarketService(provider=_create_market_provider())
-_stock_search_provider = RedisStockSearchProvider()
-_stock_service = StockService(provider=RedisStockDetailProvider())
+
+if settings.DEV_MODE:
+    _stock_search_provider = MockStockSearchProvider()
+    _stock_service = StockService(provider=MockStockDetailProvider())
+else:
+    _stock_search_provider = RedisStockSearchProvider()
+    _stock_service = StockService(provider=RedisStockDetailProvider())
 
 
 def get_market_service() -> MarketService:

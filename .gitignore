@@ -51,3 +51,6 @@ minio-data/
 
 # PostgreSQL local dev
 pgdata/
+
+# SQLite dev database
+*.db

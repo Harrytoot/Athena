@@ -30,8 +30,14 @@ class PortfolioRepositoryImpl(PortfolioRepository):
         model = PortfolioModel(user_id=UUID(user_id), name=name, cash=cash)
         self._session.add(model)
         await self._session.flush()
-        await self._session.refresh(model)
-        return _to_domain(model)
+        return Portfolio(
+            id=str(model.id),
+            name=model.name,
+            cash=model.cash,
+            positions=[],
+            created_at=model.created_at,
+            updated_at=model.updated_at,
+        )
 
     async def add_position(self, portfolio_id: str, user_id: str, symbol: str, name: str, shares: Decimal, cost_price: Decimal) -> Optional[Portfolio]:
         stmt = (
@@ -46,7 +52,6 @@ class PortfolioRepositoryImpl(PortfolioRepository):
         pos = PositionModel(symbol=symbol, name=name, shares=shares, cost_price=cost_price)
         model.positions.append(pos)
         await self._session.flush()
-        await self._session.refresh(model)
         return _to_domain(model)
 
     async def update_position(self, position_id: str, user_id: str, shares: Optional[Decimal], cost_price: Optional[Decimal]) -> Optional[Portfolio]:
@@ -65,7 +70,6 @@ class PortfolioRepositoryImpl(PortfolioRepository):
         if cost_price is not None:
             pos.cost_price = cost_price
         await self._session.flush()
-        await self._session.refresh(pos.portfolio)
         return _to_domain(pos.portfolio)
 
     async def remove_position(self, position_id: str, user_id: str) -> bool:
