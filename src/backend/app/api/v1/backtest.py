@@ -7,7 +7,7 @@ from app.application.services.backtest_service import BacktestService
 router = APIRouter(prefix="/backtest", tags=["Backtest"])
 
 
-@router.post("/run", response_model=BacktestResponse)
+@router.post("/run", response_model=BacktestResponse, response_model_by_alias=False)
 async def run_backtest(
     req: BacktestRequest = BacktestRequest(),
     service: BacktestService = Depends(get_backtest_service),
