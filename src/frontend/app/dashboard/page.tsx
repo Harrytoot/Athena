@@ -1,4 +1,8 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { getMarketOverview, getMarketScore } from "@/lib/api";
+import type { MarketOverview } from "@/types/market";
 import { AiMarketSummaryCard } from "@/components/ui/AiMarketSummaryCard";
 import { HotSectorList } from "@/components/ui/HotSectorList";
 import { IndexCard } from "@/components/ui/IndexCard";
@@ -7,17 +11,44 @@ import { MarketStatsRow } from "@/components/ui/MarketStatsRow";
 import { MarketTemperatureGauge } from "@/components/ui/MarketTemperatureGauge";
 import { UpdateTimeLabel } from "@/components/ui/UpdateTimeLabel";
 
-export default async function DashboardPage() {
-  let data;
-  let scoreData;
-  try {
-    data = await getMarketOverview();
-    try {
-      scoreData = await getMarketScore();
-    } catch {
-      scoreData = null;
+export default function DashboardPage() {
+  const [data, setData] = useState<MarketOverview | null>(null);
+  const [scoreData, setScoreData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchData() {
+      try {
+        const overview = await getMarketOverview();
+        if (cancelled) return;
+        setData(overview);
+        try {
+          const score = await getMarketScore();
+          if (!cancelled) setScoreData(score);
+        } catch {
+          // score is optional
+        }
+      } catch {
+        if (!cancelled) setError(true);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     }
-  } catch {
+    fetchData();
+    return () => { cancelled = true; };
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="font-mono text-sm text-muted-foreground animate-pulse">加载市场数据...</div>
+      </div>
+    );
+  }
+
+  if (error || !data) {
     return (
       <div className="flex h-full items-center justify-center">
         <div className="text-center text-muted-foreground">
@@ -29,7 +60,6 @@ export default async function DashboardPage() {
   }
 
   const temperature = scoreData?.score ?? data.temperature;
-  const source = scoreData?.source ?? "";
 
   return (
     <div className="h-full overflow-y-auto p-4">
@@ -62,12 +92,6 @@ export default async function DashboardPage() {
         </div>
 
         <AiMarketSummaryCard summary={data.summary} />
-
-        {source && (
-          <div className="text-center text-xs text-muted-foreground">
-            Market Score: {source} | Score: {temperature}
-          </div>
-        )}
       </div>
     </div>
   );

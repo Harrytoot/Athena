@@ -3,12 +3,24 @@ services:
     build:
       context: ./src/frontend
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: /api/v1
     restart: unless-stopped
     ports:
       - "127.0.0.1:3000:3000"
-    env_file: .env.production
-    environment:
-      NEXT_PUBLIC_API_URL: /api/v1
+    networks:
+      - athena
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:80:80"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+      - frontend
     networks:
       - athena
 

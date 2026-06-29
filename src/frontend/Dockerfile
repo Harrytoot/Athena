@@ -1,4 +1,6 @@
 FROM node:20-alpine AS builder
+ARG NEXT_PUBLIC_API_URL=/api/v1
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 RUN npm config set registry https://registry.npmmirror.com
 WORKDIR /app
 COPY package.json ./
