@@ -53,6 +53,7 @@ class MockMarketProvider(MarketProvider):
             ],
             summary="市场整体震荡上行，成交量温和放大，北向资金持续流入。半导体与AI板块领涨，市场情绪偏暖。",
             updated_at=now,
+            data_quality="mock",
         )
 
     async def get_trend(self) -> float:

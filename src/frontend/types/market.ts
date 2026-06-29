@@ -26,6 +26,7 @@ export interface MarketOverview {
   hotConcepts: HotItem[];
   summary: string;
   updatedAt: string;
+  dataQuality: string;
 }
 
 export interface DashboardSummary {

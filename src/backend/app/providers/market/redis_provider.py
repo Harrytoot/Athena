@@ -44,23 +44,24 @@ class RedisMarketProvider(MarketProvider):
             return _default_overview()
 
         try:
-            indices_data = json.loads(raw.get("indices", "{}"))
+            indices_data = json.loads(_unwrap(raw.get("indices", "{}")))
             return MarketOverview(
-                market_regime=MarketRegime(raw.get("market_regime", "Range")),
-                temperature=int(raw.get("temperature", 50)),
+                market_regime=MarketRegime(_unwrap(raw.get("market_regime", "Range"))),
+                temperature=int(float(_unwrap(raw.get("temperature", "50")))),
                 indices=Indices(
                     shanghai=_parse_index(indices_data.get("shanghai", {})),
                     shenzhen=_parse_index(indices_data.get("shenzhen", {})),
                     chi_next=_parse_index(indices_data.get("chi_next", {})),
                 ),
-                turnover=float(raw.get("turnover", 0)),
-                up_count=int(raw.get("up_count", 0)),
-                down_count=int(raw.get("down_count", 0)),
-                northbound=float(raw.get("northbound", 0)),
+                turnover=float(_unwrap(raw.get("turnover", "0"))),
+                up_count=int(float(_unwrap(raw.get("up_count", "0")))),
+                down_count=int(float(_unwrap(raw.get("down_count", "0")))),
+                northbound=float(_unwrap(raw.get("northbound", "0"))),
                 hot_industries=await self._get_hot_sectors(r),
                 hot_concepts=[],
-                summary=raw.get("summary", ""),
+                summary=_unwrap(raw.get("summary", "")),
                 updated_at=datetime.now(timezone(timedelta(hours=8))),
+                data_quality="cached",
             )
         except Exception as e:
             logger.error("Failed to parse market overview from Redis: %s", e)
@@ -83,6 +84,12 @@ def _parse_index(data: dict) -> IndexData:
     )
 
 
+def _unwrap(value: str) -> str:
+    if value.startswith('"') and value.endswith('"'):
+        return value[1:-1]
+    return value
+
+
 def _default_overview() -> MarketOverview:
     return MarketOverview(
         market_regime=MarketRegime.RANGE,
@@ -100,4 +107,5 @@ def _default_overview() -> MarketOverview:
         hot_concepts=[],
         summary="市场数据尚未就绪，请等待数据同步完成。",
         updated_at=datetime.now(timezone(timedelta(hours=8))),
+        data_quality="stale",
     )

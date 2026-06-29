@@ -23,12 +23,27 @@ from app.infrastructure.persistence.repositories.portfolio_repository import Por
 from app.infrastructure.persistence.repositories.watchlist_repository import WatchlistRepositoryImpl
 from app.infrastructure.persistence.session import async_session_factory
 from app.providers.market.akshare_provider import AkShareMarketProvider
+from app.providers.market.base import MarketProvider
+from app.providers.market.mock_provider import MockMarketProvider
+from app.providers.market.redis_provider import RedisMarketProvider
 from app.providers.stock.redis_provider import RedisStockDetailProvider, RedisStockSearchProvider
 
 DEFAULT_USER_ID = "00000000-0000-0000-0000-000000000001"
 DEFAULT_USER_EMAIL = "alpha@athena.local"
 
-_market_service = MarketService(provider=AkShareMarketProvider())
+
+def _create_market_provider() -> MarketProvider:
+    from app.config import settings
+    provider_type = settings.MARKET_PROVIDER
+    if provider_type == "redis":
+        return RedisMarketProvider()
+    elif provider_type == "akshare":
+        return AkShareMarketProvider()
+    else:
+        return MockMarketProvider()
+
+
+_market_service = MarketService(provider=_create_market_provider())
 _stock_search_provider = RedisStockSearchProvider()
 _stock_service = StockService(provider=RedisStockDetailProvider())
 

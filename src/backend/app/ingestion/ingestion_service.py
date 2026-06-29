@@ -1,3 +1,4 @@
+import json
 import logging
 from datetime import datetime, timezone
 from typing import Optional
@@ -7,9 +8,12 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.ingestion.feature_writer import FeatureWriter
 from app.ingestion.market_fetcher import MarketDataFetcher
 from app.ingestion.transformer import FEATURE_SOURCE, FEATURE_VERSION, DataTransformer
-from app.providers.market.base import MarketProvider
+from app.providers.market.base import MarketOverview, MarketProvider
 
 logger = logging.getLogger(__name__)
+
+REDIS_KEY_MARKET_OVERVIEW = "athena:market:overview"
+REDIS_KEY_HOT_SECTORS = "athena:market:hot_sectors"
 
 
 class IngestionService:
@@ -64,3 +68,35 @@ class IngestionService:
             result["elapsed_seconds"],
         )
         return result
+
+    async def cache_overview_to_redis(self, overview: MarketOverview) -> None:
+        try:
+            from app.infrastructure.cache.redis import get_redis
+            r = await get_redis()
+
+            mapping = {
+                "indices": json.dumps({
+                    "shanghai": overview.indices.shanghai.model_dump(),
+                    "shenzhen": overview.indices.shenzhen.model_dump(),
+                    "chi_next": overview.indices.chi_next.model_dump(),
+                }),
+                "market_regime": overview.market_regime.value,
+                "temperature": str(overview.temperature),
+                "turnover": str(overview.turnover),
+                "up_count": str(overview.up_count),
+                "down_count": str(overview.down_count),
+                "northbound": str(overview.northbound),
+                "summary": overview.summary,
+                "updated_at": overview.updated_at.isoformat() if overview.updated_at else "",
+                "data_quality": "cached",
+            }
+            await r.hset(REDIS_KEY_MARKET_OVERVIEW, mapping=mapping)
+
+            if overview.hot_industries:
+                await r.delete(REDIS_KEY_HOT_SECTORS)
+                items = [json.dumps(i.model_dump()) for i in overview.hot_industries]
+                await r.rpush(REDIS_KEY_HOT_SECTORS, *items)
+
+            logger.info("Market overview cached to Redis")
+        except Exception as e:
+            logger.error("Failed to cache market overview to Redis: %s", e)

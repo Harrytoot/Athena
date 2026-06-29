@@ -1,3 +1,5 @@
+import logging
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -6,8 +8,10 @@ from app.api import deps
 from app.api.v1 import auth, backtest, dashboard, decision, execution, market, portfolio, recommendation, stock, watchlist
 from app.config import settings
 from app.ingestion.ingestion_service import IngestionService
+from app.ingestion.observation_scheduler import ObservationModeScheduler
 from app.ingestion.scheduler import IngestionScheduler
 from app.infrastructure.persistence.session import async_session_factory
+from app.observation_preanalysis.strategy_batch_runner import StrategyBatchRunner
 from app.plugins import PluginRegistry
 from app.production_deployment import (
     EnvironmentSwitcher,
@@ -17,9 +21,13 @@ from app.production_deployment import (
     ServiceOrchestrator,
 )
 from app.production_deployment.ops import HealthCheckServer, FailoverController
+from app.providers.market.akshare_provider import AkShareMarketProvider
+
+logger = logging.getLogger(__name__)
 
 plugin_registry = PluginRegistry()
 _ingestion_scheduler: IngestionScheduler | None = None
+_observation_scheduler: ObservationModeScheduler | None = None
 
 _env_switcher = EnvironmentSwitcher()
 _secret_manager = SecretManager.get_instance()
@@ -31,7 +39,7 @@ _failover_controller = FailoverController()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global _ingestion_scheduler
+    global _ingestion_scheduler, _observation_scheduler
     if settings.ENV == "test":
         yield
         return
@@ -45,6 +53,29 @@ async def lifespan(app: FastAPI):
     ingestion_service = IngestionService(session_factory=async_session_factory)
     _ingestion_scheduler = IngestionScheduler(service=ingestion_service)
     _ingestion_scheduler.start()
+
+    akshare_provider = AkShareMarketProvider()
+    try:
+        logger.info("Running startup hydration...")
+        await ingestion_service.run_manual(provider=akshare_provider)
+        overview = await akshare_provider.get_overview()
+        await ingestion_service.cache_overview_to_redis(overview)
+        logger.info("Startup hydration complete: temperature=%d", overview.temperature)
+    except Exception:
+        logger.warning("Startup hydration failed, system will serve cached/default data")
+
+    if settings.REALTIME_ENABLED:
+        batch_runner = StrategyBatchRunner(
+            session_factory=async_session_factory,
+            stock_service=deps._stock_service,
+        )
+        _observation_scheduler = ObservationModeScheduler(
+            service=ingestion_service,
+            fetch_provider=akshare_provider,
+            batch_runner=batch_runner,
+        )
+        _observation_scheduler.start()
+        logger.info("ObservationModeScheduler with pre-analysis started")
 
     _runtime_manager.register(Component(
         name="ingestion",
@@ -62,6 +93,12 @@ async def lifespan(app: FastAPI):
         lambda: _ingestion_scheduler is not None,
         "Ingestion scheduler is active",
     )
+    if _observation_scheduler is not None:
+        _health_server.register_check(
+            "observation",
+            lambda: True,
+            "Observation mode scheduler is active",
+        )
 
     import os
     from app.production_deployment.deployment_config import deployment_config
@@ -73,6 +110,9 @@ async def lifespan(app: FastAPI):
     yield
 
     await _failover_controller.stop_heartbeat()
+
+    if _observation_scheduler:
+        _observation_scheduler.stop()
 
     if _ingestion_scheduler:
         _ingestion_scheduler.stop()
