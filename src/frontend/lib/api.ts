@@ -1,5 +1,6 @@
 import type { StockDetail } from "@/types/stock";
 import type { DecisionDTO } from "@/types/decision";
+import type { MarketOverview } from "@/types/market";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
@@ -12,7 +13,7 @@ async function fetchApi<T>(path: string): Promise<T> {
 }
 
 export async function getMarketOverview() {
-  return fetchApi<{ marketRegime: string; temperature: number; indices: any; turnover: number; upCount: number; downCount: number; northbound: number; hotIndustries: any[]; hotConcepts: any[]; summary: string; updatedAt: string }>("/market/overview");
+  return fetchApi<MarketOverview>("/market/overview");
 }
 
 export async function getMarketScore() {
