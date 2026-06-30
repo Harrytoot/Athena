@@ -10,7 +10,7 @@ if [ -f .env.production ]; then
 fi
 
 # Pull latest
-git pull origin master
+git pull origin main
 
 # Build and start
 docker compose -f docker-compose.prod.yml up -d --build
