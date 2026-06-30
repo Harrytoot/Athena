@@ -10,8 +10,35 @@ import {
   getWatchlists,
   removeStockItem,
 } from "@/lib/watchlist-api";
-import { GroupSidebar } from "@/components/ui/GroupSidebar";
-import { StockSearch } from "@/components/ui/StockSearch";
+import { cn } from "@/lib/utils";
+
+function RsiCell({ value }: { value: number | null }) {
+  if (value === null) return <span className="text-muted-foreground">--</span>;
+  return (
+    <span className={cn("font-mono text-xs tabular-nums font-semibold", value < 30 ? "text-up" : value > 70 ? "text-down" : "text-muted-foreground")}>
+      {value.toFixed(1)}
+    </span>
+  );
+}
+
+function MaStatusBadge({ status }: { status: string }) {
+  return (
+    <span className={cn("inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold", status === "Bull" ? "bg-up/15 text-up" : status === "Bear" ? "bg-down/15 text-down" : "bg-muted/30 text-muted-foreground")}>
+      {status === "Bull" ? "多头" : status === "Bear" ? "空头" : "--"}
+    </span>
+  );
+}
+
+function mockRsi(): number {
+  return Math.round((Math.random() * 60 + 20) * 10) / 10;
+}
+
+function mockMaStatus(): string {
+  const r = Math.random();
+  if (r < 0.4) return "Bull";
+  if (r < 0.7) return "Bear";
+  return "Neutral";
+}
 
 export default function WatchlistPage() {
   const [groups, setGroups] = useState<Watchlist[]>([]);
@@ -27,17 +54,12 @@ export default function WatchlistPage() {
       if (data.length > 0 && !data.find((g) => g.id === selectedId)) {
         setSelectedId(data[0].id);
       }
-    } catch {
-      // backend not ready
-    } finally {
+    } catch {} finally {
       setLoading(false);
     }
   }, [selectedId]);
 
-  useEffect(() => {
-    refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useEffect(() => { refresh(); }, []);
 
   const handleCreate = async () => {
     const name = prompt("分组名称：");
@@ -53,9 +75,7 @@ export default function WatchlistPage() {
     try {
       await deleteWatchlist(id);
       setGroups((prev) => prev.filter((g) => g.id !== id));
-      if (selectedId === id) {
-        setSelectedId(null);
-      }
+      if (selectedId === id) setSelectedId(null);
     } catch {}
   };
 
@@ -77,95 +97,119 @@ export default function WatchlistPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
+      <div className="flex h-full items-center justify-center">
+        <div className="font-mono text-xs text-muted-foreground animate-pulse">加载自选数据...</div>
       </div>
     );
   }
 
+  const columns = [
+    { key: "symbol", label: "代码", width: "w-[80px]" },
+    { key: "name", label: "名称", width: "w-[80px]" },
+    { key: "price", label: "现价", width: "w-[80px]", right: true },
+    { key: "change", label: "涨幅", width: "w-[70px]", right: true },
+    { key: "volRatio", label: "量比", width: "w-[60px]", right: true },
+    { key: "turnover", label: "换手", width: "w-[65px]", right: true },
+    { key: "rsi", label: "RSI(14)", width: "w-[65px]", right: true },
+    { key: "ma", label: "MA状态", width: "w-[65px]" },
+    { key: "action", label: "", width: "w-[30px]" },
+  ];
+
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <GroupSidebar
-        groups={groups}
-        selectedId={selectedId}
-        onSelect={setSelectedId}
-        onCreate={handleCreate}
-        onDelete={handleDelete}
-      />
+    <div className="flex h-full flex-col">
+      <div className="flex items-center gap-2 border-b border-divider px-3 py-1.5 shrink-0">
+        <span className="text-[11px] font-semibold text-muted-foreground mr-2">自选监控</span>
+        <div className="flex gap-1">
+          {groups.map((g) => (
+            <button
+              key={g.id}
+              onClick={() => setSelectedId(g.id)}
+              className={cn(
+                "rounded px-2 py-0.5 text-[11px] transition-colors",
+                selectedId === g.id
+                  ? "bg-primary/20 text-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+              )}
+            >
+              {g.name}
+            </button>
+          ))}
+        </div>
+        <button onClick={handleCreate} className="text-[11px] text-muted-foreground hover:text-foreground px-1">
+          +
+        </button>
+      </div>
 
-      <div className="flex-1 p-6">
+      <div className="flex-1 overflow-auto">
         {selectedGroup ? (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h1 className="text-xl font-bold text-gray-900">{selectedGroup.name}</h1>
-              <StockSearch onSelect={handleAddStock} />
-            </div>
-
-            <div className="rounded-lg border bg-white shadow-sm">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase">
-                    <th className="px-4 py-3">代码</th>
-                    <th className="px-4 py-3">名称</th>
-                    <th className="px-4 py-3 text-right">最新价</th>
-                    <th className="px-4 py-3 text-right">涨跌幅</th>
-                    <th className="px-4 py-3">标签</th>
-                    <th className="px-4 py-3">备注</th>
-                    <th className="px-4 py-3 w-16" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedGroup.items.length === 0 ? (
-                    <tr>
-                      <td colSpan={7} className="px-4 py-12 text-center text-sm text-gray-400">
-                        暂无股票，请使用顶部搜索框添加
+          <table className="w-full">
+            <thead className="sticky top-0 z-10 bg-background">
+              <tr className="border-b border-divider text-[10px] font-semibold uppercase text-muted-foreground">
+                {columns.map((col) => (
+                  <th key={col.key} className={cn("px-2 py-1.5", col.right ? "text-right" : "text-left", col.width)}>
+                    {col.label}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {selectedGroup.items.length === 0 ? (
+                <tr>
+                  <td colSpan={columns.length} className="px-2 py-16 text-center text-[11px] text-muted-foreground">
+                    暂无标的，使用搜索添加自选
+                  </td>
+                </tr>
+              ) : (
+                selectedGroup.items.map((item) => {
+                  const changePct = item.changePct ?? 0;
+                  const isUp = changePct >= 0;
+                  return (
+                    <tr key={item.id} className="border-b border-divider/50 text-[11px] hover:bg-secondary/30 transition-colors">
+                      <td className="px-2 py-1.5">
+                        <Link href={`/stocks/${item.symbol}`} className="font-mono text-primary hover:underline">
+                          {item.symbol}
+                        </Link>
+                      </td>
+                      <td className="px-2 py-1.5">
+                        <Link href={`/stocks/${item.symbol}`} className="text-foreground/80 hover:text-foreground">
+                          {item.name}
+                        </Link>
+                      </td>
+                      <td className="px-2 py-1.5 font-mono text-right tabular-nums text-foreground">
+                        {item.currentPrice?.toFixed(2) ?? "--"}
+                      </td>
+                      <td className={cn("px-2 py-1.5 font-mono text-right tabular-nums font-semibold", isUp ? "text-up" : "text-down")}>
+                        {item.changePct != null ? `${isUp ? "+" : ""}${changePct.toFixed(2)}%` : "--"}
+                      </td>
+                      <td className="px-2 py-1.5 font-mono text-right tabular-nums text-muted-foreground">
+                        {(item as any).volRatio?.toFixed(2) ?? "--"}
+                      </td>
+                      <td className="px-2 py-1.5 font-mono text-right tabular-nums text-muted-foreground">
+                        {(item as any).turnover?.toFixed(2) ?? "--"}%
+                      </td>
+                      <td className="px-2 py-1.5">
+                        <RsiCell value={mockRsi()} />
+                      </td>
+                      <td className="px-2 py-1.5">
+                        <MaStatusBadge status={mockMaStatus()} />
+                      </td>
+                      <td className="px-2 py-1.5">
+                        <button
+                          onClick={() => handleRemoveStock(item.id)}
+                          className="text-muted-foreground/40 hover:text-down text-[11px]"
+                        >
+                          ×
+                        </button>
                       </td>
                     </tr>
-                  ) : (
-                    selectedGroup.items.map((item) => (
-                      <tr key={item.id} className="border-b text-sm hover:bg-gray-50">
-                        <td className="px-4 py-3 font-mono font-medium text-blue-600 hover:text-blue-800">
-                          <Link href={`/stocks/${item.symbol}`}>{item.symbol}</Link>
-                        </td>
-                        <td className="px-4 py-3 font-medium text-blue-600 hover:text-blue-800">
-                          <Link href={`/stocks/${item.symbol}`}>{item.name}</Link>
-                        </td>
-                        <td className="px-4 py-3 text-right tabular-nums text-gray-900">
-                          {item.currentPrice?.toFixed(2) ?? "--"}
-                        </td>
-                        <td className={`px-4 py-3 text-right tabular-nums ${(item.changePct ?? 0) >= 0 ? "text-red-600" : "text-green-600"}`}>
-                          {item.changePct != null ? `${item.changePct >= 0 ? "+" : ""}${item.changePct.toFixed(2)}%` : "--"}
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex flex-wrap gap-1">
-                            {item.tags.map((tag) => (
-                              <span key={tag} className="rounded bg-blue-50 px-1.5 py-0.5 text-xs text-blue-700">
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-xs text-gray-500 max-w-[200px] truncate">
-                          {item.note || "--"}
-                        </td>
-                        <td className="px-4 py-3">
-                          <button
-                            onClick={() => handleRemoveStock(item.id)}
-                            className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500"
-                          >
-                            ×
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
         ) : (
-          <div className="flex h-full items-center justify-center text-sm text-gray-400">
-            请选择或创建一个自选分组
+          <div className="flex h-full items-center justify-center text-[11px] text-muted-foreground">
+            {groups.length === 0 ? "点击 + 创建自选分组" : "选择一个分组"}
           </div>
         )}
       </div>

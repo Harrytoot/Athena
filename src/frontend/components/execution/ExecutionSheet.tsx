@@ -48,23 +48,17 @@ export default function ExecutionSheet() {
   const triggerPreview = useCallback(() => {
     if (!ctx) return;
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      fetchPreview(ctx.price);
-    }, 350);
+    debounceRef.current = setTimeout(() => { fetchPreview(ctx.price); }, 350);
   }, [ctx, fetchPreview]);
 
   useEffect(() => {
     if (isOpen && ctx) triggerPreview();
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [isOpen, ctx, orderType, size, algoParams, triggerPreview]);
 
   useEffect(() => {
     if (submitResult && !submitting) {
-      const timer = setTimeout(() => {
-        reset();
-      }, 2000);
+      const timer = setTimeout(() => { reset(); }, 2500);
       return () => clearTimeout(timer);
     }
   }, [submitResult, submitting, reset]);
@@ -73,9 +67,10 @@ export default function ExecutionSheet() {
 
   const isBuy = ctx.side === "BUY";
   const sideColor = isBuy ? "text-[#00B8D9]" : "text-[#FF5630]";
-  const sideBg = isBuy ? "bg-[#00B8D9]/10 border-[#00B8D9]/30" : "bg-[#FF5630]/10 border-[#FF5630]/30";
+  const sideBg = isBuy ? "bg-[#00B8D9]/10 border-[#00B8D9]/40" : "bg-[#FF5630]/10 border-[#FF5630]/40";
   const sideBadge = isBuy ? "BUY" : "SELL";
   const maxShares = 10000;
+  const showAlgoParams = orderType === "TWAP" || orderType === "VWAP";
 
   const handlePresetClick = (pct: number) => {
     setSize(Math.round((maxShares * pct) / 100));
@@ -85,53 +80,52 @@ export default function ExecutionSheet() {
     if (ctx && !submitting) submit(ctx.price);
   };
 
-  const showAlgoParams = orderType === "TWAP" || orderType === "VWAP";
-
   return (
     <Sheet open={isOpen} onOpenChange={(open) => { if (!open) reset(); }}>
       <SheetContent
         side="right"
-        className="w-[440px] max-w-[440px] p-0 flex flex-col border-l border-[#2A2E39] bg-card backdrop-blur-md"
+        className="w-[420px] max-w-[420px] p-0 flex flex-col border-l border-divider bg-card/95 backdrop-blur-xl"
       >
-        <SheetHeader className="px-5 pt-5 pb-0 text-left">
-          <SheetTitle className="flex items-center gap-3">
+        {/* Header */}
+        <SheetHeader className="px-5 pt-5 pb-3 text-left border-b border-divider">
+          <div className="flex items-center gap-2 mb-2">
             <span
-              className={cn(
-                "inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-bold tracking-widest",
-                sideBg, sideColor
-              )}
+              className={cn("inline-flex items-center rounded-md border px-2.5 py-0.5 text-[10px] font-bold tracking-[0.15em]", sideBg, sideColor)}
             >
               {sideBadge}
             </span>
-            <span className="font-mono text-base text-foreground">{ctx.symbol}</span>
-            <span className="text-xs text-muted-foreground">{ctx.name}</span>
-          </SheetTitle>
-          <div className="flex items-baseline gap-2 mt-1">
+            <span className="font-mono text-sm font-semibold text-foreground">{ctx.symbol}</span>
+            <span className="text-[10px] text-muted-foreground">{ctx.name}</span>
+          </div>
+          <div className="flex items-baseline gap-3">
             <span className="font-mono text-2xl font-bold text-foreground">
               ¥{ctx.price.toFixed(2)}
             </span>
-            <span className="font-mono text-xs text-muted-foreground animate-pulse">
-              ▏ LIVE
+            <span className="relative flex items-center gap-1">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+              </span>
+              <span className="text-[9px] text-emerald-400 font-mono">LIVE</span>
             </span>
           </div>
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
-          {/* Algo Routing Selector */}
+          {/* Algo Routing */}
           <div>
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Algo Routing
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                Algo Routing
+              </span>
             </div>
-            <Tabs
-              value={orderType}
-              onValueChange={(v) => setOrderType(v as OrderType)}
-            >
-              <TabsList className="w-full grid grid-cols-4 bg-secondary/50">
+            <Tabs value={orderType} onValueChange={(v) => setOrderType(v as OrderType)}>
+              <TabsList className="w-full grid grid-cols-4 bg-secondary/60 h-8">
                 {ORDER_TYPES.map((ot) => (
                   <TabsTrigger
                     key={ot.value}
                     value={ot.value}
-                    className="text-[11px] font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                    className="text-[10px] font-semibold h-7 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                   >
                     {ot.label}
                   </TabsTrigger>
@@ -148,39 +142,25 @@ export default function ExecutionSheet() {
                   transition={{ duration: 0.2 }}
                   className="overflow-hidden"
                 >
-                  <div className="mt-3 p-3 rounded-md bg-secondary/30 border border-border/50 space-y-3">
+                  <div className="mt-3 p-3 rounded-md bg-background/60 border border-divider space-y-3">
                     <div>
-                      <label className="text-[11px] text-muted-foreground block mb-1">
-                        Duration (minutes)
-                      </label>
+                      <label className="text-[9px] text-muted-foreground block mb-1">Duration (minutes)</label>
                       <input
                         type="number"
-                        className="w-full rounded-md border border-border bg-background px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                        className="w-full rounded border border-border bg-card px-3 py-1.5 text-[11px] font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                         placeholder="e.g. 30"
                         value={algoParams.durationMinutes ?? ""}
-                        onChange={(e) => {
-                          setAlgoParams({
-                            ...algoParams,
-                            durationMinutes: e.target.value ? Number(e.target.value) : undefined,
-                          });
-                        }}
+                        onChange={(e) => setAlgoParams({ ...algoParams, durationMinutes: e.target.value ? Number(e.target.value) : undefined })}
                       />
                     </div>
                     <div>
-                      <label className="text-[11px] text-muted-foreground block mb-1">
-                        Max Participation (%)
-                      </label>
+                      <label className="text-[9px] text-muted-foreground block mb-1">Max Participation (%)</label>
                       <input
                         type="number"
-                        className="w-full rounded-md border border-border bg-background px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                        className="w-full rounded border border-border bg-card px-3 py-1.5 text-[11px] font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                         placeholder="e.g. 10"
                         value={algoParams.maxParticipationRate ?? ""}
-                        onChange={(e) => {
-                          setAlgoParams({
-                            ...algoParams,
-                            maxParticipationRate: e.target.value ? Number(e.target.value) : undefined,
-                          });
-                        }}
+                        onChange={(e) => setAlgoParams({ ...algoParams, maxParticipationRate: e.target.value ? Number(e.target.value) : undefined })}
                       />
                     </div>
                   </div>
@@ -192,132 +172,101 @@ export default function ExecutionSheet() {
           {/* Position Sizing */}
           <div>
             <div className="mb-2 flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Position Sizing
-              </span>
-              <span className="font-mono text-xs text-muted-foreground">
-                Max: {maxShares.toLocaleString()}
-              </span>
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Position Sizing</span>
+              <span className="font-mono text-[9px] text-muted-foreground">Max: {maxShares.toLocaleString()}</span>
             </div>
             <input
               type="number"
-              className="w-full rounded-md border border-border bg-background px-3 py-2 font-mono text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full rounded border border-border bg-card px-3 py-2 font-mono text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
               value={size}
-              min={1}
-              max={maxShares}
+              min={1} max={maxShares}
               onChange={(e) => setSize(Math.min(maxShares, Math.max(1, Number(e.target.value) || 1)))}
             />
             <div className="mt-2 flex items-center gap-2">
-              <Slider
-                value={[(size / maxShares) * 100]}
-                onValueChange={([v]) => setSize(Math.round((v / 100) * maxShares))}
-                min={0}
-                max={100}
-                step={1}
-                className="flex-1"
-              />
-              <span className="font-mono text-xs text-primary w-10 text-right">
-                {Math.round((size / maxShares) * 100)}%
-              </span>
+              <Slider value={[(size / maxShares) * 100]} onValueChange={([v]) => setSize(Math.round((v / 100) * maxShares))}
+                min={0} max={100} step={1} className="flex-1" />
+              <span className="font-mono text-[10px] text-primary w-9 text-right tabular-nums">{Math.round((size / maxShares) * 100)}%</span>
             </div>
             <div className="mt-2 flex gap-1.5">
               {POSITION_PRESETS.map((pct) => (
-                <button
-                  key={pct}
-                  onClick={() => handlePresetClick(pct)}
-                  className="flex-1 rounded-md border border-border/50 px-2 py-1 text-[11px] font-medium text-muted-foreground hover:border-primary/40 hover:text-foreground transition-colors"
-                >
+                <button key={pct} onClick={() => handlePresetClick(pct)}
+                  className="flex-1 rounded-md border border-divider px-2 py-1 text-[10px] font-medium text-muted-foreground hover:border-primary/40 hover:text-foreground transition-colors">
                   {pct}%
                 </button>
               ))}
             </div>
-            <div className="mt-1 text-right">
-              <span className="text-[11px] text-muted-foreground">
-                Est. Notional:{" "}
-                <span className="font-mono text-foreground">
-                  ¥{((size * ctx.price) / 10000).toFixed(1)}万
-                </span>
+            <div className="mt-1.5 text-right">
+              <span className="text-[9px] text-muted-foreground">
+                Est. Notional: <span className="font-mono text-foreground">¥{((size * ctx.price) / 10000).toFixed(1)}万</span>
               </span>
             </div>
           </div>
 
           {/* Pre-Trade Analytics */}
-          <div className="rounded-md bg-[#151924] border-l-4 border-yellow-500/50 p-3.5 space-y-2.5">
-            <div className="text-xs font-semibold uppercase tracking-wide text-yellow-500/80">
+          <div className="rounded-md bg-[#151924] border-l-[3px] border-amber-500/60 p-3.5 space-y-2.5">
+            <div className="text-[10px] font-semibold uppercase tracking-wide text-amber-400/90">
               Pre-Trade Analytics
             </div>
             {previewLoading ? (
               <div className="flex items-center gap-2 py-2">
-                <div className="h-3 w-3 rounded-full border border-yellow-500/40 border-t-yellow-500 animate-spin" />
-                <span className="text-[11px] text-[#8F9BBA]">Computing...</span>
+                <div className="h-3 w-3 rounded-full border-2 border-amber-500/40 border-t-amber-500 animate-spin" />
+                <span className="text-[10px] text-muted-foreground">Computing...</span>
               </div>
             ) : preview ? (
               <>
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-[#8F9BBA]">Slippage</span>
-                  <span className="font-mono text-xs text-yellow-400">
+                  <span className="text-[10px] text-muted-foreground">Slippage</span>
+                  <span className="font-mono text-[10px] text-amber-400 tabular-nums">
                     {preview.slippageBps.toFixed(1)} bps
-                    <span className="text-[#8F9BBA] ml-1">
-                      (¥{preview.slippageAmount.toFixed(2)})
-                    </span>
+                    <span className="text-muted-foreground ml-1">(¥{preview.slippageAmount.toFixed(2)})</span>
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-[#8F9BBA]">Market Impact</span>
-                  <span className="font-mono text-xs text-orange-400">
+                  <span className="text-[10px] text-muted-foreground">Market Impact</span>
+                  <span className="font-mono text-[10px] text-orange-400 tabular-nums">
                     {preview.marketImpactBps.toFixed(1)} bps
-                    <span className="text-[#8F9BBA] ml-1">
-                      (¥{preview.marketImpactAmount.toFixed(2)})
-                    </span>
+                    <span className="text-muted-foreground ml-1">(¥{preview.marketImpactAmount.toFixed(2)})</span>
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-[#8F9BBA]">Est. Avg Price</span>
-                  <span className="font-mono text-xs text-foreground">
-                    ¥{preview.estimatedAvgPrice.toFixed(2)}
-                  </span>
+                  <span className="text-[10px] text-muted-foreground">Est. Avg Price</span>
+                  <span className="font-mono text-[10px] text-foreground tabular-nums">¥{preview.estimatedAvgPrice.toFixed(2)}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-[#8F9BBA]">Participation</span>
-                  <span className="font-mono text-xs text-[#8F9BBA]">
-                    {preview.participationRate.toFixed(2)}%
-                  </span>
+                  <span className="text-[10px] text-muted-foreground">Participation</span>
+                  <span className="font-mono text-[10px] text-muted-foreground tabular-nums">{preview.participationRate.toFixed(2)}%</span>
                 </div>
-                <div className="border-t border-[#2A2E39] pt-2 flex items-center justify-between">
-                  <span className="text-[11px] text-[#8F9BBA]">
-                    Stress Test {preview.stressTestScenario}
-                  </span>
-                  <span className="font-mono text-xs text-[#FF5630]">
-                    -¥{preview.stressTestLoss.toFixed(2)}
-                  </span>
+                <div className="border-t border-divider pt-2 flex items-center justify-between">
+                  <span className="text-[10px] text-muted-foreground">Stress ({preview.stressTestScenario})</span>
+                  <span className="font-mono text-[10px] text-down tabular-nums">-¥{preview.stressTestLoss.toFixed(2)}</span>
                 </div>
               </>
             ) : (
-              <span className="text-[11px] text-[#8F9BBA]">No data available</span>
+              <span className="text-[10px] text-muted-foreground">No data available</span>
             )}
           </div>
         </div>
 
         {/* Submit Button */}
-        <div className="border-t border-border px-5 py-4">
+        <div className="border-t border-divider px-5 py-4">
           {submitResult ? (
-            <div className="rounded-md bg-[#00B8D9]/10 border border-[#00B8D9]/30 px-4 py-3 text-center">
-              <span className="text-xs text-[#00B8D9] font-semibold">
-                Order Executed Successfully
-              </span>
-              <div className="mt-1 font-mono text-[11px] text-[#8F9BBA]">
-                ID: {submitResult}
-              </div>
-            </div>
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="rounded-md bg-up/10 border border-up/40 px-4 py-3 text-center"
+            >
+              <span className="text-[11px] text-up font-semibold tracking-wide">Order Executed Successfully</span>
+              <div className="mt-1 font-mono text-[10px] text-muted-foreground">ID: {submitResult}</div>
+            </motion.div>
           ) : (
             <Button
               onClick={handleSubmit}
               disabled={submitting}
               className={cn(
-                "w-full h-12 text-sm font-bold tracking-widest uppercase transition-all duration-300",
+                "w-full h-12 text-xs font-bold tracking-[0.15em] uppercase transition-all duration-300",
                 isBuy
-                  ? "bg-[#00B8D9] text-black hover:bg-[#00B8D9]/80 shadow-[0_0_30px_rgba(0,184,217,0.15)]"
-                  : "bg-[#FF5630] text-black hover:bg-[#FF5630]/80 shadow-[0_0_30px_rgba(255,86,48,0.15)]"
+                  ? "bg-up hover:bg-up/80 text-background shadow-[0_0_30px_rgba(0,184,217,0.2)]"
+                  : "bg-down hover:bg-down/80 text-white shadow-[0_0_30px_rgba(255,86,48,0.2)]"
               )}
             >
               {submitting ? (

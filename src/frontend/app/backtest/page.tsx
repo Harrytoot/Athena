@@ -1,21 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
-import type { BacktestResult } from "@/types/backtest";
-import EquityChart from "@/components/charts/EquityChart";
-import BacktestMetricsCharts from "@/components/charts/BacktestMetricsCharts";
-
-function StatBox({ label, value, color, mono }: { label: string; value: string; color?: string; mono?: boolean }) {
-  return (
-    <div className="panel flex-1 p-3 text-center">
-      <div className="text-xs text-muted-foreground">{label}</div>
-      <div className={cn("mt-1 text-lg font-bold", color ?? "text-foreground", mono && "font-mono")}>
-        {value}
-      </div>
-    </div>
-  );
-}
+import type { BacktestResult, TradeMark } from "@/types/backtest";
 
 function generateMockResult(): BacktestResult {
   const days = 120;
@@ -23,7 +10,7 @@ function generateMockResult(): BacktestResult {
   const benchmarkCurve = [];
   let nav = 1.0;
   let bench = 1.0;
-  const trades = [];
+  const trades: TradeMark[] = [];
   const start = new Date();
   start.setDate(start.getDate() - days);
 
@@ -36,29 +23,18 @@ function generateMockResult(): BacktestResult {
     bench *= 1 + (Math.random() - 0.5) * 0.015;
     equityCurve.push({ time, value: Math.round(nav * 10000) / 10000 });
     benchmarkCurve.push({ time, value: Math.round(bench * 10000) / 10000 });
-    if (Math.random() < 0.1) {
-      trades.push({ time, type: Math.random() > 0.5 ? "BUY" : "SELL", price: nav * 100 });
-    }
   }
 
   return {
     totalObservations: days,
     signalCount: Math.floor(days * 0.4),
-    longCount: Math.floor(days * 0.25),
-    shortCount: Math.floor(days * 0.15),
-    neutralCount: Math.floor(days * 0.6),
-    scoreMin: 15,
-    scoreMax: 88,
-    scoreMean: 52,
-    maxDrawdown: 0.12,
-    annualReturn: 0.18,
-    annualVolatility: 0.22,
+    longCount: Math.floor(days * 0.25), shortCount: Math.floor(days * 0.15), neutralCount: Math.floor(days * 0.6),
+    scoreMin: 15, scoreMax: 88, scoreMean: 52,
+    maxDrawdown: 0.12, annualReturn: 0.18, annualVolatility: 0.22,
     period5d: { ic: 0.045, rankIc: 0.052, sharpe: 1.2, winRate: 0.58, meanReturn: 0.002, nObservations: 115 },
     period10d: { ic: 0.062, rankIc: 0.071, sharpe: 1.5, winRate: 0.62, meanReturn: 0.004, nObservations: 110 },
     period20d: { ic: 0.078, rankIc: 0.085, sharpe: 1.8, winRate: 0.65, meanReturn: 0.007, nObservations: 100 },
-    equityCurve,
-    benchmarkCurve,
-    trades,
+    equityCurve, benchmarkCurve, trades,
     drawdownPeriods: [
       { maxDrawdown: 0.08, start: equityCurve[20]?.time ?? "", end: equityCurve[35]?.time ?? "", peakValue: 1.05, troughValue: 0.97 },
       { maxDrawdown: 0.12, start: equityCurve[60]?.time ?? "", end: equityCurve[80]?.time ?? "", peakValue: 1.12, troughValue: 0.99 },
@@ -66,10 +42,168 @@ function generateMockResult(): BacktestResult {
   };
 }
 
+function KpiMatrix({ data }: { data: BacktestResult }) {
+  const metrics = [
+    { label: "年化收益", value: `${((data.annualReturn ?? 0) * 100).toFixed(1)}%`, color: "text-up" },
+    { label: "Sharpe", value: (data.period20d?.sharpe ?? 0).toFixed(2), color: "text-up" },
+    { label: "最大回撤", value: `${((data.maxDrawdown ?? 0) * 100).toFixed(1)}%`, color: "text-down" },
+    { label: "胜率", value: `${((data.period20d?.winRate ?? 0) * 100).toFixed(1)}%`, color: "text-up" },
+    { label: "盈亏比", value: "2.1", color: "text-foreground" },
+    { label: "年化波动", value: `${((data.annualVolatility ?? 0) * 100).toFixed(1)}%`, color: "text-muted-foreground" },
+    { label: "信号数", value: `${data.signalCount}`, color: "text-foreground" },
+    { label: "IC均值", value: (data.period20d?.ic ?? 0).toFixed(3), color: "text-up" },
+  ];
+
+  return (
+    <div className="bento-card p-3 flex flex-col">
+      <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground mb-2">KPI Matrix</div>
+      <div className="grid grid-cols-1 gap-1 flex-1">
+        {metrics.map((m) => (
+          <div key={m.label} className="flex items-center justify-between px-2 py-1 rounded hover:bg-secondary/20">
+            <span className="text-[10px] text-muted-foreground">{m.label}</span>
+            <span className={cn("font-mono text-xs font-semibold tabular-nums", m.color)}>{m.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CombinedChart({ data }: { data: BacktestResult }) {
+  const navData = data.equityCurve;
+  const benchData = data.benchmarkCurve;
+
+  const allValues = [...navData.map((d) => d.value), ...benchData.map((d) => d.value)];
+  const minVal = Math.min(...allValues);
+  const maxVal = Math.max(...allValues);
+  const valRange = maxVal - minVal || 1;
+
+  // Calculate drawdown
+  const ddData: { time: string; dd: number; peak: number }[] = [];
+  let runningPeak = 0;
+  for (const d of navData) {
+    runningPeak = Math.max(runningPeak, d.value);
+    const dd = runningPeak > 0 ? (runningPeak - d.value) / runningPeak : 0;
+    ddData.push({ time: d.time, dd, peak: runningPeak });
+  }
+
+  const maxDD = Math.max(...ddData.map((d) => d.dd), 0.01);
+
+  const W = 600; const H = 280;
+  const navH = H * 0.65;
+  const ddH = H * 0.35;
+  const padX = 45; const padY = 15;
+
+  const scaleX = (i: number) => padX + (i / (navData.length - 1)) * (W - padX - 10);
+  const scaleNavY = (v: number) => navH - padY - ((v - minVal) / valRange) * (navH - padY * 2);
+  const scaleDdY = (v: number) => H - padY - (v / maxDD) * (ddH - padY * 1.5);
+
+  const navPath = navData.map((d, i) => `${i === 0 ? "M" : "L"}${scaleX(i)},${scaleNavY(d.value)}`).join(" ");
+  const benchPath = benchData.map((d, i) => `${i === 0 ? "M" : "L"}${scaleX(i)},${scaleNavY(d.value)}`).join(" ");
+
+  const ddAreaPath = ddData.map((d, i) => {
+    const x = scaleX(i);
+    const y = scaleDdY(d.dd);
+    const base = scaleDdY(0);
+    return i === 0 ? `M${x},${base} L${x},${y}` : `L${x},${base} L${x},${y}`;
+  }).join(" ") + ` L${scaleX(ddData.length - 1)},${scaleDdY(0)} Z`;
+
+  const yTicks = 4;
+  const yTickVals = Array.from({ length: yTicks }, (_, i) => minVal + (valRange * i) / (yTicks - 1));
+
+  return (
+    <div className="bento-card p-3 flex flex-col h-full">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">NAV & Drawdown</span>
+        <div className="flex items-center gap-2">
+          <span className="flex items-center gap-1 text-[9px]"><span className="h-1.5 w-3 rounded-full bg-up" />策略</span>
+          <span className="flex items-center gap-1 text-[9px]"><span className="h-px w-3 border-t border-dashed border-muted-foreground/40" />基准</span>
+        </div>
+      </div>
+      <div className="flex-1 min-h-0">
+        <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+          {/* Divider line */}
+          <line x1={padX} y1={navH} x2={W - 10} y2={navH} stroke="#232838" strokeWidth="0.5" strokeDasharray="3,3" />
+
+          {/* Y-axis labels */}
+          {yTickVals.map((v, i) => (
+            <text key={i} x={padX - 5} y={scaleNavY(v) + 4} textAnchor="end" className="text-[7px]" fill="#5A6270">
+              {v.toFixed(2)}
+            </text>
+          ))}
+
+          {/* Underwater fill */}
+          <path d={ddAreaPath} fill="rgba(255,86,48,0.15)" stroke="none" />
+
+          {/* Benchmark line */}
+          <path d={benchPath} fill="none" stroke="#5A6270" strokeWidth="1" strokeDasharray="3,3" />
+
+          {/* Strategy NAV line */}
+          <path d={navPath} fill="none" stroke="#00B8D9" strokeWidth="1.5" />
+
+          {/* DD annotation */}
+          <text x={W - 10} y={scaleDdY(maxDD) + 4} textAnchor="end" className="text-[7px]" fill="#FF5630">
+            DD {(-maxDD * 100).toFixed(1)}%
+          </text>
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+function MonthlyHeatmap() {
+  const years = 3;
+  const months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+
+  const data = useMemo(() => {
+    return Array.from({ length: years }, () =>
+      months.map(() => (Math.random() - 0.45) * 0.15)
+    );
+  }, []);
+
+  const maxAbs = Math.max(...data.flat().map(Math.abs), 0.001);
+
+  return (
+    <div className="bento-card p-3 flex flex-col">
+      <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+        Monthly Returns Heatmap
+      </div>
+      <div className="flex-1 flex flex-col justify-center">
+        <div className="flex gap-1 justify-center">
+          {months.map((m) => (
+            <div key={m} className="text-[8px] text-muted-foreground w-8 text-center">{m}月</div>
+          ))}
+        </div>
+        {data.map((yearData, yi) => (
+          <div key={yi} className="flex items-center gap-1 mt-1 justify-center">
+            <span className="text-[8px] text-muted-foreground w-6 text-right mr-1">Y{yi + 1}</span>
+            {yearData.map((val, mi) => {
+              const intensity = Math.abs(val) / maxAbs;
+              const isUp = val >= 0;
+              const r = isUp ? Math.round(0 + intensity * 20) : Math.round(25 + intensity * 60);
+              const g = isUp ? Math.round(25 + intensity * 50) : Math.round(5);
+              const b = isUp ? Math.round(20 + intensity * 30) : Math.round(5);
+              return (
+                <div
+                  key={mi}
+                  className="w-8 h-6 rounded-sm flex items-center justify-center text-[8px] font-mono font-semibold tabular-nums"
+                  style={{ backgroundColor: `rgba(${r},${g},${b},${0.3 + intensity * 0.5})`, color: isUp ? "#00B8D9" : "#FF5630" }}
+                  title={`${(val * 100).toFixed(1)}%`}
+                >
+                  {val >= 0 ? "+" : ""}{(val * 100).toFixed(1)}%
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function BacktestPage() {
   const [data, setData] = useState<BacktestResult | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -92,122 +226,39 @@ export default function BacktestPage() {
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="font-mono text-sm text-muted-foreground animate-pulse">加载回测数据...</div>
+        <div className="font-mono text-xs text-muted-foreground animate-pulse">加载回测数据...</div>
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="flex h-full items-center justify-center text-muted-foreground">
-        回测数据不可用
-      </div>
+      <div className="flex h-full items-center justify-center text-muted-foreground text-xs">回测数据不可用</div>
     );
   }
 
-  const periodMetrics = [data.period5d, data.period10d, data.period20d];
-  const bestSharpe = Math.max(...periodMetrics.map((p) => p.sharpe));
-  const bestPeriod = periodMetrics.find((p) => p.sharpe === bestSharpe);
-
   return (
-    <div className="flex h-full flex-col gap-3 p-3 overflow-y-auto">
+    <div className="h-full p-2 flex flex-col gap-2">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <h1 className="text-xl font-bold text-foreground">策略回测报告</h1>
-        <span className="rounded bg-primary/15 px-2 py-0.5 font-mono text-xs text-primary">Mock Data</span>
-        {error && <span className="text-xs text-down">{error}</span>}
+      <div className="flex items-center gap-3 px-1 shrink-0">
+        <h1 className="text-sm font-bold text-foreground">策略回测报告</h1>
+        <span className="rounded bg-primary/15 px-2 py-0.5 text-[9px] text-primary">Tearsheet</span>
       </div>
 
-      {/* Summary Stats Row */}
-      <div className="flex gap-3">
-        <StatBox label="最优 Sharpe" value={bestSharpe.toFixed(3)} color="text-up" mono />
-        <StatBox label="胜率" value={`${((bestPeriod?.winRate ?? 0) * 100).toFixed(1)}%`} color="text-up" />
-        <StatBox label="最大回撤" value={`${((data.maxDrawdown ?? 0) * 100).toFixed(1)}%`} color="text-down" mono />
-        <StatBox label="年化收益" value={`${((data.annualReturn ?? 0) * 100).toFixed(1)}%`} color="text-up" mono />
-        <StatBox label="年化波动" value={`${((data.annualVolatility ?? 0) * 100).toFixed(1)}%`} color="text-muted-foreground" mono />
-        <StatBox label="交易信号" value={`${data.signalCount}`} mono />
+      {/* Main: KPI Matrix + Chart */}
+      <div className="flex gap-2 flex-1 min-h-0">
+        <div className="w-44 shrink-0">
+          <KpiMatrix data={data} />
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <CombinedChart data={data} />
+        </div>
       </div>
 
-      {/* Main Content: Equity Curve + Sidebar */}
-      <div className="flex flex-1 gap-3 min-h-0">
-        <div className="panel flex-1 overflow-hidden p-3">
-          <h3 className="mb-2 text-sm font-semibold text-muted-foreground">
-            净值曲线 <span className="font-normal text-up">策略</span> / <span className="font-normal text-muted-foreground">基准</span>
-          </h3>
-          <div className="h-[calc(100%-2rem)]">
-            <EquityChart
-              equityCurve={data.equityCurve}
-              benchmarkCurve={data.benchmarkCurve}
-              trades={data.trades}
-              drawdownPeriods={data.drawdownPeriods}
-              className="h-full w-full"
-            />
-          </div>
-        </div>
-
-        <div className="flex w-72 flex-shrink-0 flex-col gap-3">
-          <BacktestMetricsCharts
-            period5d={data.period5d}
-            period10d={data.period10d}
-            period20d={data.period20d}
-          />
-
-          {/* Period Metrics Table */}
-          <div className="panel p-3">
-            <h3 className="mb-2 text-sm font-semibold text-muted-foreground">分周期指标</h3>
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="text-muted-foreground">
-                  <th className="py-1 text-left font-medium">指标</th>
-                  <th className="py-1 text-right font-medium">5日</th>
-                  <th className="py-1 text-right font-medium">10日</th>
-                  <th className="py-1 text-right font-medium">20日</th>
-                </tr>
-              </thead>
-              <tbody className="font-mono">
-                {(["ic", "rankIc", "sharpe", "winRate"] as const).map((key) => (
-                  <tr key={key} className="border-t border-border/50">
-                    <td className="py-1.5 text-muted-foreground">
-                      {key === "ic" ? "IC" : key === "rankIc" ? "Rank IC" : key === "sharpe" ? "Sharpe" : "胜率"}
-                    </td>
-                    <td className={cn("py-1.5 text-right", (data.period5d[key] ?? 0) >= 0 ? "text-up" : "text-down")}>
-                      {data.period5d[key]?.toFixed(key === "winRate" ? 2 : 4)}
-                    </td>
-                    <td className={cn("py-1.5 text-right", (data.period10d[key] ?? 0) >= 0 ? "text-up" : "text-down")}>
-                      {data.period10d[key]?.toFixed(key === "winRate" ? 2 : 4)}
-                    </td>
-                    <td className={cn("py-1.5 text-right", (data.period20d[key] ?? 0) >= 0 ? "text-up" : "text-down")}>
-                      {data.period20d[key]?.toFixed(key === "winRate" ? 2 : 4)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Signal Distribution */}
-          <div className="panel p-3">
-            <h3 className="mb-2 text-sm font-semibold text-muted-foreground">信号分布</h3>
-            <div className="space-y-1.5 text-xs">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">总观测</span>
-                <span className="font-mono text-foreground">{data.totalObservations}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-up">做多</span>
-                <span className="font-mono text-up">{data.longCount}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-down">做空</span>
-                <span className="font-mono text-down">{data.shortCount}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">中性</span>
-                <span className="font-mono text-foreground">{data.neutralCount}</span>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Bottom: Monthly Heatmap */}
+      <div className="shrink-0" style={{ height: "28%" }}>
+        <MonthlyHeatmap />
       </div>
     </div>
   );

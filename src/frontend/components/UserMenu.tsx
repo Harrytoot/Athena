@@ -11,9 +11,9 @@ export default function UserMenu() {
     return (
       <button
         onClick={logout}
-        className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-destructive"
+        className="flex items-center gap-1 text-[11px] text-muted-foreground transition-colors hover:text-destructive"
       >
-        <LogOut className="h-4 w-4" />
+        <LogOut className="h-3.5 w-3.5" />
         退出
       </button>
     );
@@ -22,9 +22,9 @@ export default function UserMenu() {
   return (
     <Link
       href="/login"
-      className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
+      className="flex items-center gap-1 text-[11px] text-muted-foreground transition-colors hover:text-primary"
     >
-      <User className="h-4 w-4" />
+      <User className="h-3.5 w-3.5" />
       登录
     </Link>
   );

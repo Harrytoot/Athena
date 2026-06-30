@@ -11,19 +11,14 @@ function StrategyNodeComponent({ data, selected }: NodeProps) {
   const color = getCategoryColor(category);
   const handles = getHandles(category);
 
-  const summary = Object.entries(nodeData.properties)
-    .slice(0, 2)
-    .map(([k, v]) => `${k}: ${v}`)
-    .join(" | ");
-
   return (
     <div
-      className="min-w-[160px] rounded-lg border-2 bg-card px-3 py-2 text-xs transition-shadow"
+      className="min-w-[130px] rounded-md border bg-background/80 backdrop-blur-sm px-2.5 py-1.5 text-xs transition-all"
       style={{
-        borderColor: selected ? color : "transparent",
+        borderColor: selected ? color : "#232838",
         borderLeftColor: color,
-        borderLeftWidth: "3px",
-        boxShadow: selected ? `0 0 12px ${color}40` : "0 1px 3px rgba(0,0,0,0.4)",
+        borderLeftWidth: "2px",
+        boxShadow: selected ? `0 0 16px ${color}30, 0 4px 12px rgba(0,0,0,0.5)` : "0 2px 6px rgba(0,0,0,0.4)",
       }}
     >
       {handles.inputs.map((handleId, i) => (
@@ -35,23 +30,17 @@ function StrategyNodeComponent({ data, selected }: NodeProps) {
           style={{
             top: handles.inputs.length > 1 ? `${((i + 1) / (handles.inputs.length + 1)) * 100}%` : "50%",
             background: color,
-            border: "2px solid #151924",
-            width: 8,
-            height: 8,
+            border: "1.5px solid #080A10",
+            width: 7, height: 7,
           }}
         />
       ))}
 
-      <div className="font-semibold text-foreground">{nodeData.label}</div>
-      <div className="mt-0.5 text-muted-foreground/70">{nodeData.sublabel}</div>
-      {summary && (
-        <div
-          className="mt-1 truncate rounded px-1.5 py-0.5 font-mono"
-          style={{ background: `${color}15`, color }}
-        >
-          {summary}
-        </div>
-      )}
+      <div className="flex items-center gap-1.5">
+        <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
+        <span className="font-semibold text-foreground text-[11px]">{nodeData.label}</span>
+      </div>
+      <div className="mt-0.5 text-[10px] text-muted-foreground/60">{nodeData.sublabel}</div>
 
       {handles.outputs.map((handleId, i) => (
         <Handle
@@ -62,9 +51,8 @@ function StrategyNodeComponent({ data, selected }: NodeProps) {
           style={{
             top: handles.outputs.length > 1 ? `${((i + 1) / (handles.outputs.length + 1)) * 100}%` : "50%",
             background: color,
-            border: "2px solid #151924",
-            width: 8,
-            height: 8,
+            border: "1.5px solid #080A10",
+            width: 7, height: 7,
           }}
         />
       ))}

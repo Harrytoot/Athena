@@ -4,24 +4,24 @@
 
 @layer base {
   :root {
-    --background: 220 29% 6%;
+    --background: 225 33% 5%;
     --foreground: 210 40% 98%;
-    --card: 224 26% 11%;
+    --card: 224 29% 10%;
     --card-foreground: 210 40% 98%;
-    --popover: 224 26% 11%;
+    --popover: 224 29% 10%;
     --popover-foreground: 210 40% 98%;
     --primary: 189 100% 43%;
     --primary-foreground: 222 47% 11%;
-    --secondary: 217 19% 27%;
+    --secondary: 226 23% 18%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 217 19% 27%;
+    --muted: 226 23% 18%;
     --muted-foreground: 215 20% 65%;
     --accent: 189 100% 43%;
     --accent-foreground: 210 40% 98%;
     --destructive: 11 100% 59%;
     --destructive-foreground: 210 40% 98%;
-    --border: 224 15% 19%;
-    --input: 224 15% 19%;
+    --border: 226 23% 18%;
+    --input: 226 23% 18%;
     --ring: 189 100% 43%;
     --radius: 0.5rem;
     --chart-1: 189 100% 43%;
@@ -29,6 +29,7 @@
     --chart-3: 40 100% 60%;
     --chart-4: 160 60% 45%;
     --chart-5: 280 65% 60%;
+    --divider: 226 23% 18%;
   }
 
   * {
@@ -38,6 +39,7 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: var(--font-mono), JetBrains Mono, Consolas, monospace;
   }
 }
 
@@ -55,6 +57,14 @@
   }
 
   .bento-grid {
-    @apply grid gap-3 h-full;
+    @apply grid gap-2 h-full;
+  }
+
+  .bento-card {
+    @apply bg-card border border-border rounded-lg overflow-hidden;
+  }
+
+  .num-mono {
+    @apply font-mono tabular-nums text-right;
   }
 }
